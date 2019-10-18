@@ -1,0 +1,620 @@
+---
+title: "Lab3_Visualization"
+author: "Annalena Erhard, Stefano Toffol (group 4)"
+date: "20 September 2018"
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r Libraries, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(plotly)
+library(MASS) 
+library(sf)
+library(dplyr)
+library(akima)
+
+```
+
+## Assignment 1
+
+$~$
+
+#### Task 1.1
+
+```{r setup, include=T, warning=FALSE}
+
+data = read.table("Data/aegypti_albopictus.csv", sep = ",", header = T)
+
+```
+
+```{r task1.1, include=TRUE, warning=FALSE, out.width="100%", out.height="100%"}
+
+library(maps)
+data1 = subset(data, data$YEAR == "2004")
+data2 = subset(data, data$YEAR == "2013")
+
+a <- list(
+  text = "Mosquitoes distribution <br />Year 2004",
+  font = list(size = 15),
+  xref = "paper",
+  yref = "paper",
+  yanchor = "bottom",
+  xanchor = "center",
+  align = "center",
+  x = median(data1$X),
+  y = median(data1$Y),
+  showarrow = FALSE
+)
+
+b <- list(
+  text = "Mosquitoes distribution <br />Year 2013",
+  font = list(size = 15),
+  xref = "paper",
+  yref = "paper",
+  yanchor = "bottom",
+  xanchor = "center",
+  align = "center",
+  x = median(data2$X),
+  y = median(data2$Y),
+  showarrow = FALSE
+)
+
+
+p1<-plot_geo(data1, lat = ~Y, lon = ~X) %>%
+  add_markers(
+    text = ~paste(LOCATION_TYPE, COUNTRY, paste("Status:", STATUS), sep = "<br />"),
+    color = ~VECTOR, symbol = I("diamond"), hoverinfo = "text", 
+    colors=colorRamp(c("lightblue","darkblue"))
+  )  %>%
+  layout(mapbox = list(
+    zoom = 0,
+    center = list(lat = ~median(Y), lon = ~median(X)),
+    showlegend = F,
+    annotation = a
+  ))
+
+p2<-plot_geo(data2, lat = ~Y, lon = ~X) %>%
+  add_markers(
+    text = ~paste(LOCATION_TYPE, COUNTRY, paste("Status:", STATUS), sep = "<br />"),
+    color = ~VECTOR, symbol = I("diamond"), hoverinfo = "text", 
+    colors=colorRamp(c("lightblue","darkblue"))
+  )  %>%
+  layout(mapbox = list(
+    zoom = 0,
+    center = list(lat = ~median(Y), lon = ~median(X)),
+    annotation = b
+  ))
+
+
+subplot(list(p1,p2),nrows=1,titleX=T,titleY=T) 
+# Behaviour of title plot is not the one expected
+```
+
+**Analysis **
+
+In year 2004 there could be only one type of mosquitos (Aedes albopictus) found in the countries Spain, Italy and Croatia. In year 2013 the accumulation of this species in central/south europe has increased and additionally a big amount of the type _Aedes aegypti_ appeared, mainly in South America (Peru, Brazil, Argentina) and Indonesia. A few isoleted population of this type were spotted also in the USA and Zambia. 
+
+$~$
+
+#### Task 1.2
+
+```{r task 1.2, include=TRUE, warning=FALSE, out.width="100%", out.height="100%"}
+
+Z <- data %>%
+  group_by(COUNTRY, COUNTRY_ID) %>%
+  summarise(Z = NROW(COUNTRY))
+
+l <- list(color = toRGB("black"), width = 0.5)
+
+g <- list(
+  showframe = TRUE,
+  showcoastlines = TRUE,
+  showcountries = T,
+  showgrid = T,
+  showline = T,
+  projection = list(type = 'equirectangular')
+)
+
+p <- plot_geo(Z) %>%
+  add_trace(
+    z = ~Z, color = ~Z, colors = 'Blues',
+    text = ~COUNTRY, locations = ~COUNTRY_ID, marker = list(line = l)
+  ) %>%
+  colorbar(title = 'Concentration of mosquitoes') %>%
+  layout(
+    title = '1958-2014 mosquitoes distribution',
+    geo = g
+)
+p
+```
+
+** Interpretation**
+
+There is so little information in this plot, because there is only one country, Brazil, with a high value which stretches the color range. In addition to that, is also hard to choose a color range wisely since the majority of small values may get confused with the background color if the scale is too bright, as in this case.
+
+$~$
+
+#### Task 1.3
+
+```{r task 1.3}
+g <- list(
+  showframe = TRUE,
+  showcoastlines = TRUE,
+  showcountries = T,
+  showgrid = T,
+  showline = T,
+  projection = list(type = 'equirectangular')
+)
+
+p1 <- plot_geo(Z) %>%
+  add_trace(
+    z = ~log(Z), color = ~log(Z), colors = 'Blues',
+    text = ~COUNTRY, locations = ~COUNTRY_ID, marker = list(line = l)
+  ) %>%
+  colorbar(title = 'Log-Concentration of mosquitoes') %>%
+  layout(
+    title = '1958-2014 mosquitoes distribution',
+    geo = g
+)
+
+g <- list(
+  showframe = TRUE,
+  showcoastlines = TRUE,
+  showgrid = T,
+  showline = T,
+  projection = list(type = 'conic equal area')
+)
+
+p2 <- plot_geo(Z) %>%
+  add_trace(
+    z = ~log(Z), color = ~log(Z), colors = 'Blues',
+    text = ~COUNTRY, locations = ~COUNTRY_ID, marker = list(line = l)
+  ) %>%
+  colorbar(title = 'Log-Concentration of mosquitoes') %>%
+  layout(
+    title = '1958-2014 mosquitoes distribution',
+    geo = g
+)
+
+subplot(p1, p2)
+```
+
+**Interpretation**
+
+The map of step 3a looks more witely stretched then the one of step 2. The clear advantage of map 3a compared to 3b is that every country can be seen clearly and in one sight, even though the areas closer to the poles get stretched out (*conformal projection*). The advantage of map 3b is that the round shape preserves the real areas of the planet. However it has the downside of deforming the borders of the countries and it may confound the viewer, probably used to the *Mercador projection*.  
+The change of scale improves dramatically the quality of the graph, since it allows the observer to clearly identify the actual magnitude of the phenomenon, even between those countries that are not much populated by the animals. In fact all the nations that used to appear almost white in the previous plot now shows a more continuos palette. In particular we can see that also the rest of America and East Asia presented a discrete amount of mosquitoes in the study period. Nonetheless, it's important to remember that the current color scale may be misinterpreted by the spectator, since it seems that also USA, Malasya and others country have had a similar, yet minor, concentration of mosquitoes than Brazil, even though in the absolute scale the actual difference is much greater.
+
+$~$
+
+#### Task 1.4
+
+```{r task 1.4}
+X_Brazil <- data$X[data$COUNTRY=="Brazil" & data$YEAR==2013]
+X1 <- cut_interval(X_Brazil, 100)
+Y_Brazil <- data$Y[data$COUNTRY=="Brazil" & data$YEAR==2013]
+Y1 <- cut_interval(Y_Brazil, 100)
+df_Brazil <- data.frame(data[(data$COUNTRY=="Brazil" & data$YEAR==2013),], 
+                        X_Groups = X1, Y_Groups = Y1)
+df_Brazil$Grid_Groups <- interaction(df_Brazil$X_Groups, df_Brazil$Y_Groups)
+df_Brazil$Mean_X <- ave(df_Brazil$X, df_Brazil$Grid_Groups, FUN = mean)
+df_Brazil$Mean_Y <- ave(df_Brazil$Y, df_Brazil$Grid_Groups, FUN = mean)
+df_Brazil <- df_Brazil %>%
+  group_by(Grid_Groups) %>%
+  mutate(Grid_Count = n())
+
+Sys.setenv('MAPBOX_TOKEN' = 'pk.eyJ1Ijoic3RldG84MjAiLCJhIjoiY2ptYm1hNGoxMDVzODNxcDh5YWYwdWIyeiJ9.vqmnBQELpRxT2klgrWJvuQ')
+
+p<-plot_mapbox(mode = "scattermapbox") %>%
+  add_markers(
+    data = df_Brazil, x = ~Mean_X, y = ~Mean_Y, color=~Grid_Count, text =~Grid_Count,
+    hoverinfo = "text", alpha = 0.5, colors = "RdPu") %>%
+  layout(
+    plot_bgcolor = '#191A1A', paper_bgcolor = '#191A1A',
+    mapbox = list(style = 'dark',
+                  scope = "south america",
+                  zoom = 2.8,
+                  center = list(lat = -13.41, lon = -53.28)),
+    margin = list(l = 0, r = 0,
+                  b = 0, t = 0,
+                  pad = 0)
+    )
+
+p
+
+```
+
+**Interpretation**
+
+Observing the zoomed map of Brazil, it's clear that the areas greatly infected are the ones closer to the Ocean, on the east part of the country. The discretization and the closer view to the country allow to better identify the real spread of the mosquitoes: in step 1 the animals seemed to be equally distributed inside the country, while with the actual map the level of detail is much greater. The hot areas seem to be the states of _Paraiba_ and _Rio Grande Do Norte_ in the north and the states of _San Paulo_, _Paranà_ and _Minas Gerais_ in the south.
+
+## Assignment 2
+
+$~$
+
+#### Task 2.1
+
+```{r task2.1, include=TRUE, warning=FALSE, out.width="100%", out.height="100%"}
+
+household = read.table("Data/householddata.csv", sep = ",", header = T, fileEncoding = "ISO8859-15")
+
+s = split( household, levels(household$age), drop = FALSE)
+splitdata = cbind(s$`18-29 years`[,c(1,3)], s$`30-49 years`[,3], s$`50-64 years`[,3])
+names(splitdata) = c("region", "young", "adult", "senior") 
+
+```
+
+$~$
+
+#### Task 2.2
+```{r task2.2, include=TRUE, warning=FALSE, out.width="100%", out.height="100%"}
+
+levels(household$age) = c("young", "adult", "senior") 
+
+p = ggplot(household, aes(x = household$age, y = household$X2016))+
+  geom_violin()+
+  xlab("age groups")+
+  ylab("income")
+
+p
+
+```
+
+**Interpretation**
+
+This plot shows the mean income distribution by age groups in a violin plot. The advantage of a violin plot compared to a boxplot is that the total distribution is depicted. For the categories "young" it can be seen that the focus point of the distribution lies by 300 and has a comparable small range. It also is minimally multimodal, which can be seen as the wideness of the graph ingreases again at an income of about 390. In comparison to age group "young", the other ones are leveled a lot higher. Age group "adult" starts at about 450 whereas "senior" starts at about 460. Both of them have their highest frequencies at the bottom, but only the distribution of age group "adult" really is multimodal. For this group, there is also another small pick at the highest end of the range, around 660.
+This plot describes that in all three age groups the incomes are relatively close to each other, with some exceptions at the top of the ranges for "young" and "adult".
+
+$~$
+
+#### Task 2.3
+
+```{r task2.3, include=TRUE, warning=FALSE, out.width="100%", out.height="100%"}
+s = interp(x = splitdata$young, y = splitdata$adult, z = splitdata$senior)
+
+p = plot_ly(x=~s$x, y=~s$y, z=~s$z) %>%
+  add_surface()
+p
+```
+
+**Interpretation**
+
+The surface plot highlights a clear linear trend between the plotted variables, hence a linear regression would model this dependency fairly well. In particular the projections of the surface on the three spacial planes corresponds to the ```bisettrice```, showing an almost perfect correlation for each pair of variables. In other words, the income of the three group of people are fairly similar, as previously stated. The major fluctuation is observed along the X axis around small values of the variables.
+
+
+$~$
+
+#### Task 2.4
+
+```{r task2.4, include=TRUE, warning=FALSE, out.width="100%", out.height="100%"}
+splitdata$region = substr(as.character(splitdata$region), 4, nchar(as.character(splitdata$region))-7)
+
+
+
+rds<-readRDS("Data/gadm36_SWE_2_sf.rds") 
+df<-splitdata
+
+# for young
+rds$young = 0
+
+for (i in 1:nrow(df)){
+  rds$young[which(rds$NAME_1 == df$region[i])] = df$young[i]
+}
+
+
+#plotly with add_sf()
+p1<-plot_ly()%>%
+  add_sf(data=rds, 
+         split=~NAME_1, 
+         color=~young, 
+         showlegend=F, 
+         alpha=1) 
+
+
+# for adult
+rds$adult = 0
+
+for (i in 1:nrow(df)){
+  rds$adult[which(rds$NAME_1 == df$region[i])] = df$adult[i]
+}
+
+
+#plotly with add_sf()
+p2<-plot_ly()%>%
+  add_sf(data=rds, 
+         split=~NAME_1, 
+         color=~adult, 
+         showlegend=F, 
+         alpha=1) 
+
+subplot(p1, p2)
+
+```
+
+**Interpretation**
+
+The two choropleth maps are fairly similar, showing a general slight positive shift of values from young to adult incomes. The extra information received from this plot is how the income is spread around the country. Both the maps reveals a general wellness of Swedish citizens, with the exeption of the _Orebo_ region, with an income close to 100 for both populations. The richest regions are instead the ones of _Hallad_ and _Stockholm_. 
+
+
+$~$
+
+#### Task 2.5
+
+```{r task 2.5, include=TRUE, warning=FALSE, out.width="100%", out.height="100%"}
+
+p1 %>% 
+  layout(annotations = list(x = 15.624525, y = 58.409814,  text = "Linköping", textangle=0, 
+                            colour = "red"))
+
+```
+
+
+Having troubles adding the dot markers, we decided to instead draw an arrow to our city.
+
+
+
+**Appendix**
+```{r appendix, echo = FALSE, include= TRUE, eval = FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(plotly)
+library(MASS) 
+library(sf)
+library(dplyr)
+library(akima)
+
+
+
+# 1.1
+data = read.table("Data/aegypti_albopictus.csv", sep = ",", header = T)
+
+
+library(maps)
+data1 = subset(data, data$YEAR == "2004")
+data2 = subset(data, data$YEAR == "2013")
+
+a <- list(
+  text = "Mosquitoes distribution <br />Year 2004",
+  font = list(size = 15),
+  xref = "paper",
+  yref = "paper",
+  yanchor = "bottom",
+  xanchor = "center",
+  align = "center",
+  x = median(data1$X),
+  y = median(data1$Y),
+  showarrow = FALSE
+)
+
+b <- list(
+  text = "Mosquitoes distribution <br />Year 2013",
+  font = list(size = 15),
+  xref = "paper",
+  yref = "paper",
+  yanchor = "bottom",
+  xanchor = "center",
+  align = "center",
+  x = median(data2$X),
+  y = median(data2$Y),
+  showarrow = FALSE
+)
+
+
+p1<-plot_geo(data1, lat = ~Y, lon = ~X) %>%
+  add_markers(
+    text = ~paste(LOCATION_TYPE, COUNTRY, paste("Status:", STATUS), sep = "<br />"),
+    color = ~VECTOR, symbol = I("diamond"), hoverinfo = "text", 
+    colors=colorRamp(c("lightblue","darkblue"))
+  )  %>%
+  layout(mapbox = list(
+    zoom = 0,
+    center = list(lat = ~median(Y), lon = ~median(X)),
+    showlegend = F,
+    annotation = a
+  ))
+
+p2<-plot_geo(data2, lat = ~Y, lon = ~X) %>%
+  add_markers(
+    text = ~paste(LOCATION_TYPE, COUNTRY, paste("Status:", STATUS), sep = "<br />"),
+    color = ~VECTOR, symbol = I("diamond"), hoverinfo = "text", 
+    colors=colorRamp(c("lightblue","darkblue"))
+  )  %>%
+  layout(mapbox = list(
+    zoom = 0,
+    center = list(lat = ~median(Y), lon = ~median(X)),
+    annotation = b
+  ))
+
+
+subplot(list(p1,p2),nrows=1,titleX=T,titleY=T) 
+
+
+# 1.2 ----------------------
+Z <- data %>%
+  group_by(COUNTRY, COUNTRY_ID) %>%
+  summarise(Z = NROW(COUNTRY))
+
+l <- list(color = toRGB("black"), width = 0.5)
+
+g <- list(
+  showframe = TRUE,
+  showcoastlines = TRUE,
+  showcountries = T,
+  showgrid = T,
+  showline = T,
+  projection = list(type = 'equirectangular')
+)
+
+p <- plot_geo(Z) %>%
+  add_trace(
+    z = ~Z, color = ~Z, colors = 'Blues',
+    text = ~COUNTRY, locations = ~COUNTRY_ID, marker = list(line = l)
+  ) %>%
+  colorbar(title = 'Concentration of mosquitoes') %>%
+  layout(
+    title = '1958-2014 mosquitoes distribution',
+    geo = g
+)
+p
+
+
+# 1.3 ------------------
+g <- list(
+  showframe = TRUE,
+  showcoastlines = TRUE,
+  showcountries = T,
+  showgrid = T,
+  showline = T,
+  projection = list(type = 'equirectangular')
+)
+
+p1 <- plot_geo(Z) %>%
+  add_trace(
+    z = ~log(Z), color = ~log(Z), colors = 'Blues',
+    text = ~COUNTRY, locations = ~COUNTRY_ID, marker = list(line = l)
+  ) %>%
+  colorbar(title = 'Log-Concentration of mosquitoes') %>%
+  layout(
+    title = '1958-2014 mosquitoes distribution',
+    geo = g
+)
+
+g <- list(
+  showframe = TRUE,
+  showcoastlines = TRUE,
+  showgrid = T,
+  showline = T,
+  projection = list(type = 'conic equal area')
+)
+
+p2 <- plot_geo(Z) %>%
+  add_trace(
+    z = ~log(Z), color = ~log(Z), colors = 'Blues',
+    text = ~COUNTRY, locations = ~COUNTRY_ID, marker = list(line = l)
+  ) %>%
+  colorbar(title = 'Log-Concentration of mosquitoes') %>%
+  layout(
+    title = '1958-2014 mosquitoes distribution',
+    geo = g
+)
+
+subplot(p1, p2)
+
+# 1.4 -----------------
+X_Brazil <- data$X[data$COUNTRY=="Brazil" & data$YEAR==2013]
+X1 <- cut_interval(X_Brazil, 100)
+Y_Brazil <- data$Y[data$COUNTRY=="Brazil" & data$YEAR==2013]
+Y1 <- cut_interval(Y_Brazil, 100)
+df_Brazil <- data.frame(data[(data$COUNTRY=="Brazil" & data$YEAR==2013),], 
+                        X_Groups = X1, Y_Groups = Y1)
+df_Brazil$Grid_Groups <- interaction(df_Brazil$X_Groups, df_Brazil$Y_Groups)
+df_Brazil$Mean_X <- ave(df_Brazil$X, df_Brazil$Grid_Groups, FUN = mean)
+df_Brazil$Mean_Y <- ave(df_Brazil$Y, df_Brazil$Grid_Groups, FUN = mean)
+df_Brazil <- df_Brazil %>%
+  group_by(Grid_Groups) %>%
+  mutate(Grid_Count = n())
+
+Sys.setenv('MAPBOX_TOKEN' = 'pk.eyJ1Ijoic3RldG84MjAiLCJhIjoiY2ptYm1hNGoxMDVzODNxcDh5YWYwdWIyeiJ9.vqmnBQELpRxT2klgrWJvuQ')
+
+p<-plot_mapbox(mode = "scattermapbox") %>%
+  add_markers(
+    data = df_Brazil, x = ~Mean_X, y = ~Mean_Y, color=~Grid_Count, text =~Grid_Count,
+    hoverinfo = "text", alpha = 0.5, colors = "RdPu") %>%
+  layout(
+    plot_bgcolor = '#191A1A', paper_bgcolor = '#191A1A',
+    mapbox = list(style = 'dark',
+                  scope = "south america",
+                  zoom = 2.8,
+                  center = list(lat = -13.41, lon = -53.28)),
+    margin = list(l = 0, r = 0,
+                  b = 0, t = 0,
+                  pad = 0)
+    )
+
+p
+
+
+# 2.1 --------------
+household = read.table("Data/householddata.csv", sep = ",", header = T, fileEncoding = "ISO8859-15")
+
+s = split( household, levels(household$age), drop = FALSE)
+splitdata = cbind(s$`18-29 years`[,c(1,3)], s$`30-49 years`[,3], s$`50-64 years`[,3])
+names(splitdata) = c("region", "young", "adult", "senior") 
+
+
+# 2.2 ----------
+levels(household$age) = c("young", "adult", "senior") 
+
+p = ggplot(household, aes(x = household$age, y = household$X2016))+
+  geom_violin()+
+  xlab("age groups")+
+  ylab("income")
+
+p
+
+# 2.3 ---------------
+s = interp(x = splitdata$young, y = splitdata$adult, z = splitdata$senior)
+
+p = plot_ly(x=~s$x, y=~s$y, z=~s$z) %>%
+  add_surface()
+p
+
+
+# 2.4 ------------
+splitdata$region = substr(as.character(splitdata$region), 4, nchar(as.character(splitdata$region))-7)
+
+
+
+rds<-readRDS("Data/gadm36_SWE_2_sf.rds") 
+df<-splitdata
+
+# for young
+rds$young = 0
+
+for (i in 1:nrow(df)){
+  rds$young[which(rds$NAME_1 == df$region[i])] = df$young[i]
+}
+
+
+#plotly with add_sf()
+p1<-plot_ly()%>%
+  add_sf(data=rds, 
+         split=~NAME_1, 
+         color=~young, 
+         showlegend=F, 
+         alpha=1) 
+
+
+# for adult
+rds$adult = 0
+
+for (i in 1:nrow(df)){
+  rds$adult[which(rds$NAME_1 == df$region[i])] = df$adult[i]
+}
+
+
+#plotly with add_sf()
+p2<-plot_ly()%>%
+  add_sf(data=rds, 
+         split=~NAME_1, 
+         color=~adult, 
+         showlegend=F, 
+         alpha=1) 
+
+subplot(p1, p2)
+
+
+
+# 2.5 ---------------------
+p1 %>% 
+  layout(annotations = list(x = 15.624525, y = 58.409814,  text = "Linköping", textangle=0, 
+                            colour = "red"))
+
+```
+

@@ -1,0 +1,142 @@
+
+<!-- saved from url=(0050)https://www.ida.liu.se/~732A75/lab/clustering.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><title>TDDD41/732A75: Clustering Lab</title>
+
+</head><body><h2>TDDD41/732A75: Clustering Lab</h2>
+
+<h3>Goals</h3>
+
+<ul>
+<li>Gain familiarity with the data mining toolkit, Weka
+</li><li>Learn to apply clustering algorithms using Weka
+</li><li>Understand outputs produced by clustering tools in Weka
+</li></ul>
+
+<h3>Procedure</h3>
+
+<ul>
+
+
+<li><b> Dataset</b>
+
+<p> In this lab we will work with a dataset from <a href="http://people.scs.fsu.edu/~burkardt/datasets/hartigan/hartigan.html">HARTIGAN</a>
+(file.06). The file has been translated into <a href="http://weka.wikispaces.com/ARFF">ARFF</a>, the default data file format in Weka. Download the dataset  <a href="http://www.ida.liu.se/~732A75/lab/food.arff">here</a>. The
+dataset gives nutrient levels of 27 kinds of food. The mounts of
+energy, protein, fat, calcium and iron have been measured in a 3
+ounce portion of the various foods.
+
+</p><p>
+Press the <font face="Verdana" size="2"><b>Preprocess</b></font>tab. Now Press the  <font face="Verdana" size="2"><b>Open</b></font> button and load <i>food.arff</i>. A description of each attribute can be seen by
+selecting the attribute from the list in the left hand side of the
+screen. The description appears in the right hand side of the
+screen. Press the  <font face="Verdana" size="2"><b>Edit</b></font>
+button, you can read and edit each instances. 
+</p><p>
+More info on
+Explorer-Preprocessing is available in the Explorer User Guide.
+
+
+
+</p><p>
+
+</p></li><li><b>Cluster Data</b>
+
+<p>
+Several clustering algorithms are implemented in Weka. In this lab we experiment with an implementation of K-means,  <b>SimpleKmeans</b>, and an implementation of a density-based method, <b>MakeDensityBasedClusterer</b> in Weka. 
+</p><p>
+To cluster the data, click on the  <font face="Verdana" size="2"><b>Cluster</b></font> tab. Press the  <font face="Verdana" size="2"><b>Choose</b></font> button to select the clustering
+algorithm. Click on the line that has appeared to the right of the Choose button to edit
+the properties of the algorithm. You can find a detailed description of the algorithm by
+pressing the  <font face="Verdana" size="2"><b>More</b></font>
+button. Set the desired properties and press
+<font face="Verdana" size="2"><b>OK</b></font>.  In the Cluster mode, select "Use training set". Press the  <font face="Verdana" size="2"><b> Ignore</b></font>
+attributes button to specify which attributes should be used in the clustering.  Click <font face="Verdana" size="2"><b>
+Start</b></font>. 
+</p><p>
+Check the output on the right hand side of the
+screen. You can right click the result set in the "Result list" panel
+and view the results of clustering in a separate window. The result
+window shows the centroid of each cluster as well as statistics on the
+number and percentage of instances assigned to different
+clusters. Another way of understanding the characteristics of each
+cluster is through visualization. We can do this by right-clicking the
+result set on the left "Result list" panel and selecting "Visualize
+cluster assignments". You also can click the <font face="Verdana" size="2"><b>Save</b></font> button in the visualization window and save the
+result as an arff file.
+
+</p><p>
+More info on Explorer-Clustering is available in the Explorer User Guide.
+ 
+
+<!-- Some
+						    implementations of
+						    K-means only allow
+						    numeric values for
+						    attributes. In
+						    that case, it may
+						    be necessary to
+						    convert nominal
+						    attributes to
+						    binary. It may
+						    also be necessary
+						    to normalize the
+						    values of
+						    attributes that
+						    are measured on
+						    substantially
+						    different scales. 
+
+WEKA  SimpleKMeans
+						    algorithm
+						    automatically
+						    handles a mixture
+						    of nominal and
+						    numeric
+						    attributes. Furthermore, the algorithm automatically normalizes numeric attributes into the range of [0 to 1] when doing distance computation.
+-->
+
+</p><ul>
+<li> SimpleKmeans</li>
+<p>
+ Apply "SimpleKMeans" to your data. In Weka <i>euclidian
+distance</i> is implemented in SimpleKmeans. You can set the number of
+clusters and seed of a random algorithm for generating initial cluster
+centers. Experiment with the algorithm as follows:
+
+</p><p>
+1. Choose a set of attributes for clustering and give a
+motivation. (<b>Hint</b>: always ignore attribute "name". Why does the name attribute need to be ignored?) <br>
+2. Experiment with at least two different numbers of clusters, e.g. 2 and 5, but with the same seed value 10.<br>
+3. Then try with a different seed value, i.e. different initial
+cluster centers. Compare the results with the previous results. Explain what the seed value controls. <br>
+4. Do you think the clusters are "good" clusters? (Are all of its members "similar" to each other? Are members from different clusters dissimilar?)<br>
+5. What does each cluster represent? Choose one of the results. Make up labels (words or phrases in English) which characterize each cluster.<br>
+
+<br>
+
+
+</p><li> MakeDensityBasedClusters
+
+<p>
+Now with MakeDensityBasedClusters, SimpleKMeans is turned into a
+denstiy-based clusterer. You can set the minimum standard
+deviation for normal density calculation. Experiment with the
+algorithm as the follows:
+
+</p><p>
+1. Use the SimpleKMeans clusterer which gave the result you haven chosen in
+5). <br>
+2.  Experiment with at least two different standard deviations. Compare the results. (<b>Hint</b>: Increasing the standard deviation to higher values will make the differences in different runs more obvious and thus it will be easier to conclude what the parameter does)
+
+</p></li></ul>
+</li></ul>
+
+
+<h3>Submission</h3>
+
+Submit a report describing your experiments. This should include the reasons why certain parameters/attributes/values were chosen, explanation of the procedure, and the explanation of the results. When explaining the experiments there is no need for explaining every step of the process (such as which buttons were clicked, etc). It is enough to say which algorithm was run and which arguements were used. In addition, do not copy-paste the full outputs from the tool. When presenting the results, present only those parts of the output which are relevant for what you are trying to explain. In cases where you are asked to compare different experiments, you should first compare the results and then try to reason about why the changes in the results occured (did not occur). Avoid writing statements without motivation, such as "Results are better/worse." In other words, explain in what respect they are better/worse and why this happened. Your lab report should also include the answers to <b>all</b> questions in the text.
+
+
+
+<!-- http://condor.depaul.edu/~ntomuro/courses/578/assign/hw4.html -->
+</body></html>

@@ -1,0 +1,272 @@
+---
+title: "Lab2 Visualization"
+author: "Annalena Erhard, Stefano Toffol"
+date: "11 September 2018"
+output: html_document
+runtime: shiny
+---
+
+```{r Libraries, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(plotly)
+library(MASS) 
+
+```
+
+## Assignment 1
+
+$~$
+
+#### Task 1.1
+
+```{r setup, include=TRUE, warning=FALSE}
+
+dataolive = read.table("Data/olive.csv", sep = ",", header = T)[,-1]
+
+```
+
+```{r task1, include=TRUE, warning=FALSE, out.width="100%", out.height="100%"}
+g1 <- ggplot(dataolive, aes(x = palmitoleic, y = oleic, col = linolenic))+
+  geom_point() +
+  ggtitle("A: continuous color scale")
+
+dataolive$lincut = cut_interval(dataolive$linolenic, 4)
+
+g2 <- ggplot(dataolive, aes(x = palmitoleic, y = oleic, col = lincut))+
+  geom_point() +
+  scale_color_discrete(name = "linolenic level", labels=c("Low", "Medium", "High", "Really high"))+
+  ggtitle("B: discrete color scale")
+
+gridExtra::grid.arrange(g1, g2, nrow=2)
+
+```
+
+Both the plots show a strong relationship between `oleic` and `palmitoleic`, since the former decreases when the latter increases. On the other hand `linolenic` has a weak link with the two variables. Extreme values ol `linolenic`, both positive and negative, correspond to low values of `palmitoleic` / high values of `oleic`. The continuous color scale of figure A is capable to clearly display those characteristic. On the other hand a discrete color scale, used in figure B, doesn't show any clear trend and the overlap of the various points makes the interpretation even more difficult.
+
+$~$
+
+$~$
+
+#### Task 1.2
+
+```{r task2, include=TRUE, warning=FALSE, out.width="100%"}
+g1 <- ggplot(dataolive, aes(x = palmitoleic, y = oleic, col = lincut))+
+  geom_point() +
+  scale_color_discrete(name = "linolenic level", labels=c("Low", "Medium", "High", "Really high")) +
+  ggtitle("A: color")
+
+g2 <- ggplot(dataolive, aes(x = palmitoleic, y = oleic, size = lincut))+
+  geom_point() +
+  scale_color_discrete(name = "linolenic level", labels=c("Low", "Medium", "High", "Really high")) +
+  ggtitle("B: size")
+
+g3 <- ggplot(dataolive, aes(x = palmitoleic, y = oleic, angle = as.numeric(lincut)))+
+  geom_point()+
+  geom_spoke(radius = 0.5,  arrow=arrow(length = unit(0.2,"cm"))) +
+  scale_color_discrete(name = "linolenic level", labels=c("Low", "Medium", "High", "Really high")) +
+  ggtitle("C: lines inclination")
+
+gridExtra::grid.arrange(g1,g2,g3, nrow = 3)
+```
+
+Of the various plots, the second one titled *"B: shapes"* is the most difficult to interpretate, due to the fact that the overplotting and the presence of particulary big objects make impossible to distinghish not only trend and features of the data but also the various elemnts one from the other. Moreover the plot were lines inclination where used, titled *"C: lines inclination"*, presents various problems, such as overplotting and the impossibility for the human brain of distinguishing more than three bits of information at a time when only codified by line inclination (in this case the classes are 4).
+
+$~$
+
+$~$
+
+#### Task 1.3
+
+```{r task3, include=TRUE, warning=FALSE}
+ggplot(dataolive, aes(x = eicosenoic, y = oleic, col = as.numeric(Region)))+
+  geom_point()
+
+
+ggplot(dataolive, aes(x = eicosenoic, y = oleic, col = as.factor(Region)))+
+  geom_point()
+
+```
+
+The plot, which shows the region as a numeric value has the problem of misrepresenting the variable in the legend. It seems like "region" is a continuous variable but in reality it only takes on three different values (1,2,3). In the scatterplot itself it is represented correctly, due to the fact, that only three colors out of the full range are selected.
+In the second plot the variable "region" is taken as categorical. Group boundaries can be detected very quickly, because of the different colors. This is made possible by preattentive mechanism. 
+
+
+
+
+$~$
+
+$~$
+
+### Task 1.4
+
+```{r task4, include=TRUE, warning=FALSE}
+dataolive$lincut_3 = cut_interval(dataolive$linoleic, 3)
+dataolive$palmcut_3 = cut_interval(dataolive$palmitic, 3)
+dataolive$palmitcut_3 = cut_interval(dataolive$palmitoleic, 3)
+
+ggplot(dataolive, aes(x = eicosenoic, y = oleic, col = lincut_3, shape = palmcut_3, size = palmitcut_3 ))+
+  geom_point()
+
+```
+
+By theory, only 6-7 unique values can be recognized and differentiated by a human. 27 different items here are too hard to compare. The problem is an exceeded "channel capacity".
+
+
+
+$~$
+
+$~$
+
+### Task 1.5
+
+```{r task 5, include=TRUE, warning=FALSE}
+dataolive$lincut_3 = cut_interval(dataolive$linoleic, 3)
+dataolive$palmcut_3 = cut_interval(dataolive$palmitic, 3)
+dataolive$palmitcut_3 = cut_interval(dataolive$palmitoleic, 3)
+5
+ggplot(dataolive, aes(x = eicosenoic, y = oleic, col = Region, shape = palmcut_3, size = palmitcut_3 ))+
+  geom_point()
+
+```
+
+Dispite the big variety of unique values, a clear boundary between the three regions can be seen because of the colors and the orientation of the points. This phenomena can be explained by Treisman?s theory with the point that different maps can be accessed to detect feature activity. Here one of the maps is orientation, which clearly catches the attention of the viewer, but also the different colors of the regions help with getting a good overview.   
+
+$~$
+
+$~$
+
+### Task 1.6
+
+```{r task 6, include=TRUE, warning=FALSE, out.width="100%"}
+
+plot_ly(dataolive, labels = ~Area, values = ~nrow(dataolive), type = 'pie', textinfo = "none") %>%
+  layout(title = 'Proportion of oil coming from various areas',
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+
+
+```
+
+The problem, which is represented by this graphic is, that without the percentages as labels, it is hard to compare the regions. That is, because the human eye can not see angles perfectly.
+
+
+$~$
+
+$~$
+
+## Task 1.7
+
+```{r task 7, include=TRUE, warning=FALSE}
+
+ggplot(dataolive, aes(y = linoleic , x = eicosenoic))+
+  geom_density_2d()+
+  geom_point()
+
+```
+
+**Comments**
+
+By plotting the scatterplot and the contour plot of both variables in on graphic it can be seen that the contour plot doesn't represent the division into two bigger groups adequately. It also doesn't show the lack of observations between eicosenoic values of about 4 to 10 and the presence of outliers is not represented.
+
+$~$
+
+$~$
+
+## Assignment 2
+
+$~$
+
+#### Task 2.1
+
+```{r task 8, include=TRUE, warning=FALSE}
+
+library(readxl)
+baseball = read_xlsx("Data/baseball-2016.xlsx")
+rownames(baseball) = unlist(baseball[,"Team"])
+test <- str(baseball, vec.len = 3, list.len = 10)
+
+```
+
+The dataset consists of a matrix with dimensions $(30 \times 28)$. The first column consist of the names of the teams, the second one divide them according to the major leagues of baseball. The remaining variables are all numeric, with extrimely different ranges. For this reason a scaling of the data appears to be necessary before proceeding with any statistical analysis.
+
+$~$
+
+#### Task 2.2
+
+```{r task 9, include=TRUE, warning=FALSE, echo=FALSE, message=FALSE}
+
+scale_baseball= scale(baseball[,3:28]) 
+d=dist(scale_baseball, method = "minkowski") 
+res=isoMDS(d, k=2)
+coords=res$points 
+stress=res$stress
+coordsMDS=as.data.frame(coords) 
+coordsMDS$name=rownames(coordsMDS) 
+coordsMDS$League=baseball$League
+coordsMDS$Team=baseball$Team
+plot_ly(coordsMDS, x=~V1, y=~V2, type="scatter", hovertext=~Team, color= ~League, colors = c("cadetblue", "darkorange"))%>%
+  add_segments(x = -10, y = -1.3, yend = -1.3, xend = 7, color = I("darkred"), size = I(.05))
+  
+```
+
+Analyzing the plot it appears the points related to the `AL` league lay all on the right-top corner of the graph. The observations from the `NL` league instead are equally distributed accross the hole displayed plan. Of the two estimated variables, it turns out that `V2` is probably the one able to summarize the distinction between the two groups at the most. In particular the dark red horizontal line at approximately height $-1.3$ divides the points in two groups, where the lowest one contains only `NL` league observations while the upper section include the totality of `AL` data plus the remaining one from `NL` league. The only real outliers are the "*Boston Red Sox*", with a strongly negative `V1` value, anomalous considering both the entire dataset and only the units belonging to the `AL` league.
+
+$~$
+
+#### Task 2.3
+
+```{r task 10, include=TRUE, warning=FALSE, echo=FALSE}
+
+sh<- Shepard(d, coords) 
+delta <-as.numeric(d) 
+D<- as.numeric(dist(coords)) 
+n=nrow(coords) 
+index=matrix(1:n, nrow=n, ncol=n) 
+index1=as.numeric(index[lower.tri(index)]) 
+index=matrix(1:n, nrow=n, ncol=n, byrow = T) 
+index2=as.numeric(index[lower.tri(index)]) 
+
+plot_ly()%>% add_markers(x=~delta, y=~D, hoverinfo = 'text', text = ~paste('Obj1: ', rownames(baseball)[index1], '<br> Obj 2: ', rownames(baseball)[index2]))%>%
+  add_lines(x=~sh$x, y=~sh$yf)
+``` 
+
+The MDS seems to decently approximate the real distribution of the dataset, with a stress equal to `r res$stress`. The various pairs of distances generally lays on the estimated step function, meaning the rank order of the original dissimilarities is substantially preserved. Of the various points, only the pair ("*Minnesota Twins*", "*Aizona Diamondbacks*") and the pair ("*Oakland Athletics*", "*Milwaukee Brewers*") appear to be the furthest away from the central line. The first one shows a strong positive difference between the estimated dissimilarity `D` and the actual dissimilarity of the whole dataset `delta`, while the second has a negative divergence.
+
+$~$
+
+#### Task 2.4
+
+```{r task 11, include=TRUE, warning=FALSE, echo=FALSE}
+
+data = cbind(baseball[,3:28], coordsMDS[,2])
+names(data)[27] = "V2"
+names(data)[c(8,9)] = c("B2", "B3")
+for (i in 1:26) {
+  assign(paste("P", i, sep = ""),
+  ggplot(data, aes_string(x = names(data)[i], y = "V2"))+
+    geom_point())
+}
+
+gridExtra::grid.arrange(P1, P2, P3, P4, P5, P6, P7, P8, P9, nrow = 3, ncol = 3)
+gridExtra::grid.arrange(P10, P11, P12, P13, P14, P15, P16, P16, P17, nrow = 3, ncol = 3)
+gridExtra::grid.arrange(P18, P19, P20, P21, P22, P23, P24, P25, P26, nrow = 3, ncol = 3)
+
+```
+
+In task 2.2 it came out that the Variable 2 (`V2`) on the y axis was the most important to determine the difference between leagues in the scaled dataset. After plotting every single numerical variable of the dataset versus `V2` it was found that `HR` (Home Run), `HR.per.game`, `3B` (batter gets eliminated in $3^{rd}$ base), `SH` (Sacrifice hit) and `IBB` (Intentional Base on Balls) had the strongest relations with the explanatory variable (positive for the first two, negative for the remaining). In the end, `HR` and `HR.per.game` were chosen, providing the strongest link with the regressor. Those two variables refer to the same statistic, being one a transformation of the other, and it describes the situation in which the defensive team manages to strike the ball in such a way that the attacking team is not able to catch it before the batter reaches safely the home base. For this reason a team obtaining an `HR` is consequently scoring 1 point at least, making it more likely to win a game.
+
+```{r}
+
+P4 <- P4 + geom_abline(intercept = coef(lm(V2~HR.per.game, data))[1], 
+                       slope = coef(lm(V2~HR.per.game, data))[2],
+                       linetype="dashed", size=0.5)
+P10 <- P10 + geom_abline(intercept = coef(lm(V2~HR, data))[1], slope = coef(lm(V2~HR, data))[2],
+                       linetype="dashed", size=0.5)
+gridExtra::grid.arrange(P4, P10, nrow = 2, ncol = 1)
+
+```
+

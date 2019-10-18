@@ -1,0 +1,614 @@
+---
+title: "Lab_4_Visualization"
+author: "Annalena Erhard, Stefano Toffol"
+date: "26 September 2018"
+output: html_document
+---
+
+```{r Libraries, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(plotly)
+library(seriation) 
+library(ggplot2)
+library(GGally)
+
+```
+
+## Assignment 1
+
+$~$
+
+#### Task 1.1
+
+```{r task 1.1, include=TRUE, warning=FALSE}
+
+data = read.table("prices-and-earnings.txt", sep = "\t", header = T, row.names = 1)[,c(1,2,5,6,7,9,10,16,17,18,19)]
+
+```
+
+$~$
+
+#### Task 1.2
+
+```{r task 1.2, include=TRUE, warning=FALSE, out.width="100%", out.height="100%"}
+
+datascaled=scale(data) 
+plot_ly(x=colnames(datascaled), 
+        y=rownames(datascaled), 
+        z=datascaled, type="heatmap", 
+        colors =colorRamp(c("yellow", "red"))) 
+
+```
+
+**Analysis:**
+
+There are no obvious outliers or clusters identifiable.
+
+$~$
+
+#### Task 1.3
+
+```{r task 1.3, include=TRUE, warning=FALSE, out.width="100%", out.height="100%"}
+
+# Eucledian Distance ------------------
+set.seed(12345)
+rowdist<-dist(datascaled) 
+coldist<-dist(t(datascaled)) 
+
+# With hierarchical clustering as optimation Method
+order1<-seriate(rowdist, "GW") 
+order2<-seriate(coldist, "GW") 
+
+ord1<-get_order(order1) 
+ord2<-get_order(order2) 
+
+reordmatr<-datascaled[rev(ord1),ord2] 
+
+# One minus correlation --------------------
+C1 = 1-cor(datascaled)
+C2 = 1-cor(t(datascaled))
+
+rowdist_1 = as.dist(C2)
+coldist_1 = as.dist(C1)
+
+# With hierarchical clustering as optimization Method
+order3<-seriate(rowdist_1, "GW") 
+order4<-seriate(coldist_1, "GW") 
+
+ord3<-get_order(order3) 
+ord4<-get_order(order4) 
+
+reordmatr2<-datascaled[rev(ord3),ord4] 
+
+
+# Plots -----------------------------------
+
+# Plot for 1-Cor Distance
+p1.3.1 = plot_ly(x=colnames(reordmatr2), 
+        y=rownames(reordmatr2), 
+        z=reordmatr2, type="heatmap", 
+        colors =colorRamp(c("yellow", "red")))
+
+
+# Plot for Eucledian Distance
+p1.3.2 = plot_ly(x=colnames(reordmatr), 
+        y=rownames(reordmatr), 
+        z=reordmatr, type="heatmap", 
+        colors = colorRamp(c("yellow", "red"))) 
+
+subplot(p1.3.1, p1.3.2, margin = 0.1)
+```
+
+
+```{r, out.width="100%", out.height= "100%"}
+knitr::include_graphics("comparison_eucl_1-corr.png")
+```
+
+**Interpretation:**
+
+The left heatmap is the plot based on 1- Correlation and the right one is based on the eucledian distance. Both of them can be analyzed relatively well, however the eucledian distance based ordering allows a more detailed interpretation. 
+The heatmap on the left can roughly be divided into three clusters (as seen in the above picture). Cluster 1 is defined by in gereral high values of all values but also very high values of Women's Clothing and the Clothing Index. In Cluster 2, the cities (i.e. Oslo, Helsinki) have low values of Hours Worked, Rice and Bread. Cluster 3 these variables are very high, but the rest of the variables like Wage and Goods and Services Index are low. 
+Because of a better ordering of the cities the heatmap on the right can be more detailed divided in five clusters. The first one is set by low values at the three variables Bread, Rice and Working Hours. The rest of the variables are very high, compared to the rest of the heatmap. Hence this Cluster includes some of the most expensive cities in the world, like Tokyo and Geneva. In cluster 2 the general color scheme is a dark orange, which means that most of the variables have a relatively high values, so the living expenses have medium to high level. The cities in this cluster are mostly capitals of western countries like Auckland, Moscow and Berlin. In cluster 3 The variables, which describe Working Hours, Rice and Bread Consumption have a medium high level (between 0 and 2). It can also clearly be seen that the others have a lower level (between -2 and 0). Cluster 4 is defined by a general medium level of all variables. It stands out, that the value of Working Hours is relatively high, because it is colored in red in most cases. The cities in this cluster are extremely big ones from all over the world. Another unique situation can be found in the last cluster. Very high values of Rice, Bread and Working Hours are set in combination with very low values for the remaining variables. This structure can be found in mainly Asian cities like Dehli and Jakarta.
+
+
+$~$
+
+#### Task 1.4
+
+```{r task 1.4, include=TRUE, warning=FALSE, message=FALSE, out.width="100%", out.height="100%"}
+
+# Eucledian distance ------------------
+
+# Distances from task 1.3 are used
+# With hierarchical clustering as optimation Method
+set.seed(12345)
+order5<-seriate(rowdist, "TSP") 
+order6<-seriate(coldist, "TSP") 
+
+ord5<-get_order(order5) 
+ord6<-get_order(order6) 
+
+reordmatr3<-datascaled[rev(ord5),ord6] 
+
+p1.4 = plot_ly(x=colnames(reordmatr3), 
+        y=rownames(reordmatr3), 
+        z=reordmatr3, type="heatmap", 
+        colors =colorRamp(c("yellow", "red"))) 
+
+# comparing plots --------------------
+
+subplot(p1.3.2, p1.4, margin = 0.1)
+
+# Comparing other measures ----------
+comp1 = rbind(
+    unordered = criterion(rowdist, method = "Path_length"),
+    HC_PL = criterion(rowdist, ord1, method="Path_length"),
+    TSP_PL = criterion(rowdist, ord5, method="Path_length")
+)
+
+comp2 = rbind(
+    unordered = criterion(rowdist, method = "Gradient_raw"),
+    HC_PL = criterion(rowdist, ord1, method="Gradient_raw"),
+    TSP_PL = criterion(rowdist, ord5, method="Gradient_raw")
+)
+comp1
+comp2
+```
+
+**Analysis:**
+
+Comparing the previous plot to the one which was sorted with the TSP- Solver, the second graphic clearly is harder to analyze, because no clear separation of the clusters can be detected. 
+Also the Path Length and the Gradient Measure of the plots can be compared. The TSP-Solver has the best result in minimizing the Path Length. Regarding the Gradient measure, HC_Pl maximized the gradient measure in the best way. So these criteria can not really be taken to choose one or the other method.
+
+$~$
+
+#### Task 1.5
+
+```{r task 1.5, include=TRUE, warning=FALSE, out.width="100%", out.height="100%"}
+
+datascaled = as.data.frame(datascaled)
+df = datascaled[,c(8,2,5,9,1,3,11,7,4,10,6)]
+datascaled$color = as.factor(df$Goods.and.Services... > 0.5)
+levels(datascaled$color) <- c("<= 3080", "> 3080")
+
+hover <- rep(rownames(datascaled), 11)
+
+labels <- c("Food costs", "Womens Clothing", "Clothing Index", "Hours worked", "Wage Gross", 
+            "Vacation Days", "Rent", "Bread", "Rice", "GS", "GS Index")
+
+p <- ggparcoord(datascaled, 
+                columns = 1:11,
+                groupColumn = 12,
+                scale = "uniminmax") +
+  geom_text(aes(label = hover), alpha = 0) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(title = "Sorted Parallel Coordinate Plot") +
+  scale_x_discrete(labels = labels) +
+  scale_colour_manual(values = c("> 3080" = "steelblue", "<= 3080" = "forestgreen")) +
+  guides(color = guide_legend(title = "GS Index"))
+
+ggplotly(p, tooltip = c("x", "y", "label", "colour"))
+
+
+```
+
+
+**Analysis:**
+
+Looking at the variable *GS* two clusters can be detected. The data is mainly split by a GS scaled Value of 0.5, equivalent to 3080 approximately. These same groups roughtly mantain their division even if we just consider *Wage Gross*, *Clothing Index* or *Womens Clothing* singularly: if their standardized values greater than 0.45 (in their original scale equal to 65, 106 and 681 respectively) it's quite likely their *GS* value will be greater than 3080 (blue lines). The same results would have been achieved by using *GS Index* and *Rent* as clustering variables, since their correlation with *GS* is almost equal to 1.  
+There are many outliers in the plot, but the most prominent seems to be the city of Caracas because of its bread price: while all the other observations in its cluster present standardized values between 0.00 and 0.25, the capital of Venezuela has a value of 0.82 approximately, probably due to the recent inflation problems of the country.
+
+
+$~$
+
+#### Task 1.6
+
+```{r task 1.6, include=TRUE, warning=FALSE, out.width="100%", out.height="100%"}
+
+stars(reordmatr,
+      draw.segments=F,
+      col.stars=rep("#80AFCE",
+                    nrow(reordmatr)),
+      ncol = 12, labels = rownames(reordmatr))
+
+
+
+```
+
+** Analysis**
+
+It will be focused on two clusters and their outliers in the following images. Cluster 1, which is shown in the picture below, includes Geneva, Zurich, Oslo, Copenhagen and Luxembourg. A clearly detected outlier here is Tokyo. It is defined by higer values on the top (marked in red), and lower values on the right (marked in pink).
+
+```{r, out.width="100%", out.height= "100%"}
+knitr::include_graphics("outlier1.png")
+```
+
+A second Cluster could be detected by looking at the cities Prague, Bratislava and Riga (see image below). Kuala Lumpur can be seen as an outlier with higher values at the top (marked in red) and lower values at the bottom right (marked in pink). 
+
+```{r, out.width="100%", out.height= "100%"}
+knitr::include_graphics("outlier2.png")
+```
+
+
+$~$
+#### Task 1.7
+For a comparison of many variables heat maps are relatively efficient. It gives a good overview for the beginning of the analysis. For the recognition of clusters a trellis plot is a good option, even though the analysis with this graphic can be problematic with a high number of input variables. A parallel coordinate plot is a good visualization for connections between the variables.
+
+
+$~$
+
+#### Task 2.1
+
+```{r task 2.1.1, include=TRUE, warning=FALSE}
+
+adult = read.table("adult.csv", sep = ",", header = T)
+names(adult) = c("age", "workclass","fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country", "Income_level")
+
+p2.1.1 <- ggplot(adult, aes(x = age, y = hours_per_week, color = Income_level)) +
+  geom_point()
+p2.1.1
+
+```
+
+**Analysis:**
+One detected problem is an overplotting, which makes the distiction between the groups hard to spot. Hours_per_week is a factor, but is not possible to see inside each group and whether or not there is a change in Income with an increase of age.
+
+
+
+```{r task 2.1.2, include=TRUE, warning=FALSE}
+p2.1.2 <- ggplot(adult, aes(x = age, y = hours_per_week)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~Income_level, labeller = "label_both")
+p2.1.2
+```
+
+**Analysis:**
+
+Thanks to the smoothing of the trellis plot is possible to see the differences between the two groups. Low income units increase their working time while they are in their early twenties; they then reach a stable and maximum weekly working time of approx 40 hours per week to finally slowly decreas to 25 after the age of 55. High income level remain stable at approx 45 hours per week from their twenties until their fifties, to then decrease up to 30 when they are 75. In both groups, the final increase of hours may be caused by the lack of observations above 75 years old.
+
+
+$~$
+
+#### Task 2.2
+```{r task 2.2, include=TRUE, warning=FALSE}
+
+
+# Density plots
+p2.2.1 <- ggplot(adult, aes(x = age, group = Income_level, fill = Income_level)) +
+  geom_density(alpha = 0.6)
+p2.2.1
+
+p2.2.2 <- ggplot(adult, aes(x = age, group = Income_level, fill = Income_level)) +
+  geom_density(alpha = 0.6) +
+  facet_wrap(~marital_status, labeller = "label_both")
+p2.2.2
+
+```
+
+**Analysis**
+
+In the first plot the general trend is highlighted: the age of low income employees is mainly concentrated between 18 and 30 years of age, resulting in a right skewed distribution. On the other hand, the wealthiest people appears to be symmetrically distributed, with a mean between 40 and 45 years. The situation change significantly if the two variables are conditioned on Marital Status. It seems that the trend observed before is mainly caused by the never-married group of people, while the ones who are or used to be married do not show big differences between the two groups, with the exception of the widowed group.
+
+$~$
+
+#### Task 2.3
+
+```{r task 2.3.1, include=TRUE, warning=FALSE}
+
+df <- adult[-which(adult$capital_loss==0),]
+
+# 3D Scatterplot
+p2.3.1 <- plot_ly(df, x = ~education_num, y = ~age, z = ~capital_loss) %>%
+  add_markers() %>%
+  layout(scene = list(xaxis = list(title = 'Education'),
+                      yaxis = list(title = 'Age'),
+                      zaxis = list(title = 'Capital loss')))
+p2.3.1
+
+```
+
+**Analysis**
+In this plot, overplotting is again a problem and makes it hard to detect differences among the groups. It is also impossible to see how the variables influence each other.
+
+
+```{r task 2.3.2, include=TRUE, warning=FALSE}
+
+# Trellisplot
+df$age_f <- cut_number(df$age, 6)
+p2.3.2 <- ggplot(df, aes(x = education_num, y = capital_loss)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~age_f, labeller = "label_both")
+p2.3.2
+
+```
+
+**Analysis**
+The trellis shows similar situations among the various age groups. However, some interesting trends emerge from the graph, previously hided due to overplotting issues.
+In all the six groups the observations are concentrated between values of 8 and 16 for `education_num` (with the exception of the youngest group, where the same range is 8-14 approximately) and between 1500 and 2500 for `capital_loss`. Nonetheless the distribution tends to get more homogeneous with the increase of the age (the observed range of the color scale decreses) and the pick with the highest concentration shifts: while it corresponds to people with 8-12 years of education in the first group, for adults between 35 and 54 years old it changes to 12-16.
+
+$~$
+
+#### Task 2.4
+
+```{r task 2.4, include=TRUE, warning=FALSE}
+# Using cut interval
+df$age_f <- cut_number(df$age, 4)
+p2.4.1 <- ggplot(df, aes(x = education_num, y = capital_loss)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~age_f, labeller = "label_both")
+p2.4.1
+
+
+# With 10% overlap
+df$age_f2<-lattice::equal.count(df$age, number=4, overlap=0.1) 
+L<-matrix(unlist(levels(df$age_f2)), ncol=2, byrow = T) 
+L1<-data.frame(Lower=L[,1], Upper=L[,2], Interval=factor(1:nrow(L))) 
+
+index=c() 
+Class=c() 
+
+for(i in 1:nrow(L)){ 
+  Cl=paste("[", L1$Lower[i], "," , L1$Upper[i], "]", sep="") 
+  ind=which(df$age>=L1$Lower[i] &df$age<=L1$Upper[i]) 
+  index=c(index,ind) 
+  Class=c(Class, rep(Cl, length(ind))) 
+  } 
+
+df4<-df[index,] 
+df4$Class<-as.factor(Class) 
+
+
+
+p2.4.2 <- ggplot(df4, aes(x = education_num, y = capital_loss)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~Class, labeller = "label_both")
+p2.4.2
+
+
+```
+
+Using Shingles with 10% overlap, boundary effects problems are avoided and the shifts between the resulting plots are smoother. Some outliers and extra observations are added in this plot if compared to the simple Trellis plot, allowing to better identify the trends of each group.  
+However in this case the differences are often minimal and, in case of clearly distinguished groups, the Shingles may even lead to wrong conclusions, adding to each group observations that are outliers for that specific range of the variable.
+
+### Code
+
+```{r Appendex,  echo=TRUE, eval=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(plotly)
+library(seriation) 
+library(ggplot2)
+library(GGally) 
+
+## Assignment 1
+#### Task 1.1
+
+data = read.table("prices-and-earnings.txt", sep = "\t", header = T, row.names = 1)[,c(1,2,5,6,7,9,10,16,17,18,19)]
+
+#### Task 1.2
+
+datascaled=scale(data) 
+plot_ly(x=colnames(datascaled), 
+        y=rownames(datascaled), 
+        z=datascaled, type="heatmap", 
+        colors =colorRamp(c("yellow", "red"))) 
+
+
+#### Task 1.3
+
+
+# Eucledian Distance ------------------
+set.seed(12345)
+rowdist<-dist(datascaled) 
+coldist<-dist(t(datascaled)) 
+
+# With hierarchical clustering as optimation Method
+order1<-seriate(rowdist, "GW") 
+order2<-seriate(coldist, "GW") 
+
+ord1<-get_order(order1) 
+ord2<-get_order(order2) 
+
+reordmatr<-datascaled[rev(ord1),ord2] 
+
+# One minus correlation --------------------
+C1 = 1-cor(datascaled)
+C2 = 1-cor(t(datascaled))
+
+rowdist_1 = as.dist(C2)
+coldist_1 = as.dist(C1)
+
+# With hierarchical clustering as optimization Method
+order3<-seriate(rowdist_1, "GW") 
+order4<-seriate(coldist_1, "GW") 
+
+ord3<-get_order(order3) 
+ord4<-get_order(order4) 
+
+reordmatr2<-datascaled[rev(ord3),ord4] 
+
+
+# Plots -----------------------------------
+
+# Plot for 1-Cor Distance
+p1.3.1 = plot_ly(x=colnames(reordmatr2), 
+        y=rownames(reordmatr2), 
+        z=reordmatr2, type="heatmap", 
+        colors =colorRamp(c("yellow", "red")))
+
+
+# Plot for Eucledian Distance
+p1.3.2 = plot_ly(x=colnames(reordmatr), 
+        y=rownames(reordmatr), 
+        z=reordmatr, type="heatmap", 
+        colors = colorRamp(c("yellow", "red"))) 
+
+subplot(p1.3.1, p1.3.2, margin = 0.1)
+
+
+#### Task 1.4
+# Eucledian distance ------------------
+
+# Distances from task 1.3 are used
+# With hierarchical clustering as optimation Method
+set.seed(12345)
+order5<-seriate(rowdist, "TSP") 
+order6<-seriate(coldist, "TSP") 
+
+ord5<-get_order(order5) 
+ord6<-get_order(order6) 
+
+reordmatr3<-datascaled[rev(ord5),ord6] 
+
+p1.4 = plot_ly(x=colnames(reordmatr3), 
+        y=rownames(reordmatr3), 
+        z=reordmatr3, type="heatmap", 
+        colors =colorRamp(c("yellow", "red"))) 
+
+# comparing plots --------------------
+
+subplot(p1.3.2, p1.4, margin = 0.1)
+
+# Comparing other measures ----------
+comp1 = rbind(
+    unordered = criterion(rowdist, method = "Path_length"),
+    HC_PL = criterion(rowdist, ord1, method="Path_length"),
+    TSP_PL = criterion(rowdist, ord5, method="Path_length")
+)
+
+comp2 = rbind(
+    unordered = criterion(rowdist, method = "Gradient_raw"),
+    HC_PL = criterion(rowdist, ord1, method="Gradient_raw"),
+    TSP_PL = criterion(rowdist, ord5, method="Gradient_raw")
+)
+comp1
+comp2
+
+
+datascaled = as.data.frame(datascaled)
+df = datascaled[,c(8,2,5,9,1,3,11,7,4,10,6)]
+datascaled$color = as.factor(df$Goods.and.Services... > 0.5)
+levels(datascaled$color) <- c("<= 3080", "> 3080")
+
+hover <- rep(rownames(datascaled), 11)
+
+labels <- c("Food costs", "Womens Clothing", "Clothing Index", "Hours worked", "Wage Gross", 
+            "Vacation Days", "Rent", "Bread", "Rice", "GS", "GS Index")
+
+p <- ggparcoord(datascaled, 
+                columns = 1:11,
+                groupColumn = 12,
+                scale = "uniminmax") +
+  geom_text(aes(label = hover), alpha = 0) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(title = "Sorted Parallel Coordinate Plot") +
+  scale_x_discrete(labels = labels) +
+  scale_colour_manual(values = c("> 3080" = "steelblue", "<= 3080" = "forestgreen")) +
+  guides(color = guide_legend(title = "GS Index"))
+
+ggplotly(p, tooltip = c("x", "y", "label", "colour"))
+
+
+#### Task 1.6
+
+stars(reordmatr,
+      draw.segments=F,
+      col.stars=rep("#80AFCE",
+                    nrow(reordmatr)),
+      ncol = 12, labels = rownames(reordmatr))
+
+
+
+#### Task 2.1
+adult = read.table("adult.csv", sep = ",", header = T)
+names(adult) = c("age", "workclass","fnlwgt", "education", "education_num", "marital_status", "occupation", "relationship", "race", "sex", "capital_gain", "capital_loss", "hours_per_week", "native_country", "Income_level")
+
+p2.1.1 <- ggplot(adult, aes(x = age, y = hours_per_week, color = Income_level)) +
+  geom_point()
+p2.1.1
+
+p2.1.2 <- ggplot(adult, aes(x = age, y = hours_per_week)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~Income_level, labeller = "label_both")
+p2.1.2
+
+
+#### Task 2.2
+# Density plots
+p2.2.1 <- ggplot(adult, aes(x = age, group = Income_level, fill = Income_level)) +
+  geom_density(alpha = 0.6)
+p2.2.1
+
+p2.2.2 <- ggplot(adult, aes(x = age, group = Income_level, fill = Income_level)) +
+  geom_density(alpha = 0.6) +
+  facet_wrap(~marital_status, labeller = "label_both")
+p2.2.2
+
+#### Task 2.3
+df <- adult[-which(adult$capital_loss==0),]
+
+# 3D Scatterplot
+p2.3.1 <- plot_ly(df, x = ~education_num, y = ~age, z = ~capital_loss) %>%
+  add_markers() %>%
+  layout(scene = list(xaxis = list(title = 'Education'),
+                      yaxis = list(title = 'Age'),
+                      zaxis = list(title = 'Capital loss')))
+p2.3.1
+
+
+# Trellisplot
+df$age_f <- cut_number(df$age, 6)
+p2.3.2 <- ggplot(df, aes(x = education_num, y = capital_loss)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~age_f, labeller = "label_both")
+p2.3.2
+
+
+#### Task 2.4
+
+# Using cut interval
+df$age_f <- cut_number(df$age, 4)
+p2.4.1 <- ggplot(df, aes(x = education_num, y = capital_loss)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~age_f, labeller = "label_both")
+p2.4.1
+
+
+# With 10% overlap
+df$age_f2<-lattice::equal.count(df$age, number=4, overlap=0.1) 
+L<-matrix(unlist(levels(df$age_f2)), ncol=2, byrow = T) 
+L1<-data.frame(Lower=L[,1], Upper=L[,2], Interval=factor(1:nrow(L))) 
+
+index=c() 
+Class=c() 
+
+for(i in 1:nrow(L)){ 
+  Cl=paste("[", L1$Lower[i], "," , L1$Upper[i], "]", sep="") 
+  ind=which(df$age>=L1$Lower[i] &df$age<=L1$Upper[i]) 
+  index=c(index,ind) 
+  Class=c(Class, rep(Cl, length(ind))) 
+  } 
+
+df4<-df[index,] 
+df4$Class<-as.factor(Class) 
+
+
+
+p2.4.2 <- ggplot(df4, aes(x = education_num, y = capital_loss)) +
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~Class, labeller = "label_both")
+p2.4.2
+
+
+```

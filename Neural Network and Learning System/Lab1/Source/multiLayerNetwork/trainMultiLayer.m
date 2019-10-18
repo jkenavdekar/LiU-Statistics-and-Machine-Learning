@@ -1,0 +1,58 @@
+function [Wout,Vout, trainingError, testError ] = trainMultiLayer(Xtraining,Dtraining,Xtest,Dtest, W0, V0,numIterations, learningRate )
+%TRAINMULTILAYER Trains the network (Learning)
+%   Inputs:
+%               X* - Trainin/test features (matrix)
+%               D* - Training/test desired output of net (matrix)
+%               V0 - Weights of the output neurons (matrix)
+%               W0 - Weights of the output neurons (matrix)
+%               numIterations - Number of learning setps (scalar)
+%               learningRate - The learningrate (scalar)
+%
+%   Output:
+%               Wout - Weights after training (matrix)
+%               Vout - Weights after training (matrix)
+%               trainingError - The training error for each iteration
+%                               (vector)
+%               testError - The test error for each iteration
+%                               (vector)
+
+% Initiate variables
+trainingError = nan(numIterations+1,1);
+testError = nan(numIterations+1,1);
+numTraining = size(Xtraining,2);
+numTest = size(Xtest,2);
+numClasses = size(Dtraining,1) - 1;
+Wout = W0;
+Vout = V0;
+
+% Calculate initial error
+Ytraining = runMultiLayer(Xtraining, W0, V0);
+Ytest = runMultiLayer(Xtest, W0, V0);
+trainingError(1) = sum(sum((Ytraining - Dtraining).^2))/(numTraining*numClasses);
+testError(1) = sum(sum((Ytest - Dtest).^2))/(numTest*numClasses);
+N = size(Xtraining, 2);
+
+for n = 1:numIterations
+        
+    Zin = transpose(Wout)*Xtraining;
+    tanh_Zin = tanh(Zin);
+    der_tanh_Zin = 1-tanh_Zin.^2;
+    bias_Zin = ones(1, size(tanh_Zin, 2));
+    bias_Zin(2:size(tanh_Zin, 1)+1,:) = tanh_Zin;
+    Zout = transpose(Vout)*bias_Zin; 
+    
+    grad_v = bias_Zin*transpose(2*(Zout-Dtraining))/N; %Calculate the gradient for the output layer
+    grad_w = Xtraining*transpose(2*Vout(2:size(Vout, 1),:) * ...
+        (Zout-Dtraining).*der_tanh_Zin)/N; %..and for the hidden layer.
+
+    Wout = Wout - learningRate * grad_w; %Take the learning step.
+    Vout = Vout - learningRate * grad_v; %Take the learning step.
+
+    Ytraining = runMultiLayer(Xtraining, Wout, Vout);
+    Ytest = runMultiLayer(Xtest, Wout, Vout);
+
+    trainingError(1+n) = sum(sum((Ytraining - Dtraining).^2))/(numTraining*numClasses);
+    testError(1+n) = sum(sum((Ytest - Dtest).^2))/(numTest*numClasses);
+end
+
+end

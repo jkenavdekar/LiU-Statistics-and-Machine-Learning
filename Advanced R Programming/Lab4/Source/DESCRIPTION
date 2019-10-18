@@ -1,0 +1,13 @@
+Package: Linear.reg
+Type: Package
+Title: Linear regression
+Version: 0.1.0
+Author: group15
+Maintainer: The package maintainers: <steto820@student.liu.se>, <mimte666@student.liu.se>, <andst745@student.liu.se>
+Description: The package creates a new class called "Linreg".It consists in an alternative implemantation of the linear regression algorithm.
+License: MIT+ file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.0
+Suggests: knitr,rmarkdown,testthat,ggplot2
+VignetteBuilder: knitr

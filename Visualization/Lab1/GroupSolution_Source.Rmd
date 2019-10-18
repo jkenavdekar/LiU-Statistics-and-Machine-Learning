@@ -1,0 +1,291 @@
+---
+title: "Lab1 Visualization"
+author: "Annalena Erhard, Stefano Toffol"
+date: "11 September 2018"
+output: html_document
+runtime: shiny
+---
+
+```{r Libraries, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(gridExtra)
+library(plotly)
+library(shiny)
+library(gginnards)
+library(knitr)
+```
+
+\
+
+## Assignment 1
+\
+
+In this first assignmet it was asked to modify a PDF file, called `tree.pdf` (figure 1A), containing a tree graph and a barplot at the bottom. The task was to modify the file through the software `Inkspace`.
+
+The required edits were:
+
+* renumbering terminal nodes;
+
+* removing title, node numbers and p-values;
+
+* adding percentages below each terminal node;
+
+* adjusting colours.
+
+The final result (figure) should resamble as closely as possible the modified graph: 
+
+$~$
+```{r, out.width="100%", out.height= "100%"}
+knitr::include_graphics("Data/tree_final.pdf")
+```
+
+$~$
+
+## Assignment 2
+
+$~$
+
+#### 1.
+
+Reading the data:
+
+```{r setup, include=TRUE}
+# Reading the dataset into the project
+data = read.table("Data/SENIC.txt")
+```
+
+
+$~$
+
+$~$
+
+#### 2.
+
+In the following code is created the function `quants`, that finds the outliers of a given vector, returning their indexes. The outliers are defined as all the values laying outside the symmetric interval centered on the mean and with a range equal to three times the interquantile range.
+
+```{r task2, include=TRUE}
+
+quants = function(x){
+  stopifnot(is.vector(x))
+  q13 = quantile(x)[c(2,4)]
+  outlier = which(x > (q13[2]) + 1.5*(q13[2] - q13[1]) | x < (q13[1]) - 1.5*(q13[2] - q13[1]))
+  return(outlier)
+}
+
+```
+
+
+$~$
+
+$~$
+
+#### 3.
+
+```{r task3, include=TRUE, echo=FALSE}
+
+outliers1 = quants(data$V4)
+
+
+dens = ggplot(data, aes(x=data$V4)) + 
+  geom_density(fill = "cadetblue" , alpha = 0.3, colour = "cadetblue") +
+  xlab("Infection risk ")+
+  geom_point(data = data[outliers1,], aes(x = V4, y = 0), shape = 5)
+
+dens
+
+```
+
+**Analysis**
+
+This graph shows the Density of the variable *Infection Risk* in the data. The density function is non- symmetrical with a heavy tail on the left side. In the graphic 5 outliers are shown, where 2 of them appear on the left and three of them appear on the right side. 
+
+
+$~$
+
+$~$
+
+#### 4.
+
+```{r task 4, include=TRUE, fig.height=7, fig.width=9, echo=FALSE}
+xnames = c("Length of Stay", "Age", "Infection Risk", "Routine Culturing Ratio", 
+           "Routine Chest X-ray Ratio", "Number of Beds", "Average Daily Census", 
+           "Number of Nurses", "Available Facilities & Services")
+
+
+nm <- names(data[,c(2:7,10:12)])
+for (j in seq_along(nm)) {
+  if (length(quants(data[,names(data) == nm[j]])) != 0){
+  assign(paste("V", j, sep = ""), 
+         ggplot(aes_string(x = nm[j]), data = data[,c(2:7,10:12)]) +
+            geom_density(fill = "cadetblue", alpha = 0.3) +
+            geom_point(data = data[quants(data[,names(data) == nm[j]]),] ,  
+                       aes_string(x = nm[j], y = "0"), 
+                       shape = 18, cex = 3) +
+            guides(fill = F)+
+            xlab(xnames[j]))
+  }
+  else{
+    assign(paste("V", j, sep = ""), 
+         ggplot(aes_string(x = nm[j]), data = data[,c(2:7,10:12)]) +
+            geom_density(fill = "cadetblue", alpha = 0.3) +
+            guides(fill = F)+
+            xlab(xnames[j]))
+  }
+}
+
+
+
+grid.arrange(V1, V2, V3, V4, V5, V6, V7, V8, V9, nrow = 3, ncol = 3)
+```
+
+**Analysis**
+
+This graphic shows a grid containing the density functions of all quantitative variables.  
+The graphs of the variables *Age*, *Routine Chest X-ray Ratio* and *Available Facilities & Services* are the only ones that appear to be symmetric, even though only the latter has no outliers. The densitiy function of infection risk is slightly left skewed, whereas the remaining ones are heavily right tailed.  
+The domains of the various variables change widely: the most restrained is *Infection Risk*, going from a minimum of 1.6 to a maximum of 8 approximately, while the *Number of Beds* and the *Avarage Daily Census* range from 0 to 800.
+
+$~$
+
+$~$
+
+#### 5. 
+
+```{r task 5, include = TRUE, echo = FALSE}
+
+ggplot(data, aes(x=V4, y=V11, colour = V7)) + 
+  geom_point(size = 3) +
+  scale_color_gradient(low = "cadetblue", high = "grey") +
+  labs(x = "Infection Risk", y = "Number of Nurses", colour = "Number of\n Beds") +
+  coord_flip()
+  
+  
+```
+
+**Analysis**
+
+In the graphic it looks like with an higher *Number of Nurses* the *Infection Risk* increases logarithmically, with the two variables slightly positively correlated. Nonetheless this apparent trend may be originated by pure chance, due to the lack of observations regarding hospitals with more than 400 nurses.  
+On the other hand the color scale codify the *Number of Beds* in the hospital during study period, adding a third dimension to the plot. This variable seems to be highly correlated with the regressor (both are linked to the dimension of the hospital), hence does not provide any additional information. For this reason the viewer may get confused and not understand the relation between the two main variables immediately, risking to loose focus on the real objective of the graph. 
+Also a color scale is often hard to see by human eyes.
+
+
+$~$
+
+$~$
+
+#### 6. 
+
+```{r task 6 , include = TRUE, message=FALSE, warning=FALSE}
+
+ggplotly(dens)
+
+```
+
+**Analysis**
+
+The graphic shows the same density function as represented in task 3. The only difference is that this one is created with the `plotly` package. This gives the possibility to hover over the outliers and see the specific values.
+
+$~$
+
+$~$
+
+#### 7.
+
+```{r task 7, include = TRUE, message=FALSE, warning=FALSE }
+
+plot_ly(x = data$V4, type = "histogram", color ="grey", symbol = 23, symbols = 23)%>%
+  add_markers(data = data[outliers1,], x = ~V4, y = 0, color = "cadetblue" )%>%
+  layout(xaxis = list(title = "Infection Risk", titlefont = list(size = 18)), bargap = 0.05)
+
+```
+
+The interactive histogram is once again generated through `plotly`, but this time dirctly, without the previous generation of a `ggplot` graph. Different lines of code are combined using *pipelines (%>%)*.
+
+$~$
+
+$~$
+
+#### 8.
+
+```{r echo=FALSE}
+
+l <- list(V1, V2, V3, V4, V5, V6, V7, V8, V9)
+names(l) <- colnames(data[,c(2:7,10:12)])
+ncol <- 1
+nrow <- 1
+
+ui <- fluidPage(
+  titlePanel("Density Plots of SCENIC's quantitative variables"),
+  fluidRow(
+   
+    column(4,
+      sliderInput(inputId="ws", label="Choose the bandwidth size:", value=0.01, min=0.1, max=20)
+    ),
+
+    column(8,
+      checkboxGroupInput("Var", "Select one or more variables:", inline = T,
+                         choiceValues = colnames(data[,c(2:7,10:12)]), choiceNames = xnames))
+    ),
+  hr(),
+  plotOutput("densPlot"))
+
+server <- function(input, output) {
+   output$densPlot <- renderPlot({
+     if(length(input$Var)==0) return(NULL)
+     if(length(input$Var)==1) {
+       nrow = 1
+       ncol = 1
+     }
+     if(length(input$Var)==2) {
+       nrow = 1
+       ncol = 2}
+     else if(length(input$Var)==3) {
+       nrow = 1
+       ncol = 3}
+     else if(length(input$Var)==4) {
+       nrow = 2
+       ncol = 2}
+     else if(length(input$Var)==5) {
+       nrow = 2
+       ncol = 3}
+     else if(length(input$Var)==6) {
+       nrow = 2
+       ncol = 3}
+     else if(length(input$Var)==7) {
+       nrow = 3
+       ncol = 3}
+     else if(length(input$Var)==8) {
+       nrow = 3
+       ncol = 3}
+     else if(length(input$Var)==9) {
+       nrow = 3
+       ncol = 3}
+     for(i in input$Var) {
+       l[[paste(i)]] <- delete_layers(l[[paste(i)]], "GeomDensity")
+       l[[paste(i)]]$layers <- c(geom_density(fill = "cadetblue", alpha = 0.3, bw = input$ws),
+                                 l[[paste(i)]]$layers)
+     }
+     do.call("grid.arrange", c(l[paste(input$Var)], ncol = ncol, nrow = nrow))
+   })
+  }
+
+shinyApp(ui, server)
+```
+
+**Additional comments and Analysis**
+
+With a lower bandwidth the density functions are more scattered, with a higher bandwidth the functions appear more smoothed. The best value of the bandwidth varies from variable to variable.  
+For the ones who have a low range in general (i.e. *Length of Stay*, *Infection Risk* and *Age*), a value of about 1 resembles the real  distribution of the variables. For the ones with a higher range, a higher value of bandwith is needed: *Routine Culturing Ratio*, *Routine Chest X-rays Ratio* and *Available Facilities & Services* are well approximated by a bandwidth of 6.0, while the remainings (i.e. *Number of Nurses*, *Number of Beds* and *Avarage Daily Census*) requires a bandwidth value of 20 or above in order to get a sufficient amount of smoothness.  
+Lastly it's important to notice that it's impossible to properly confront the various plots if given them the same bandwidth value for the reasons stated above.
+
+$~$
+
+$~$
+
+# Appendix
+
+$~$
+
+```{r, ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
+```

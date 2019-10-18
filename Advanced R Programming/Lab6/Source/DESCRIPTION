@@ -1,0 +1,15 @@
+Package: AdvR6
+Type: Package
+Title: Knapsack algorithm
+Version: 0.1.0
+Author: group15
+Maintainer: The package maintainers <steto820@student.liu.se>, <mimte666@student.liu.se>, <andst745@student.liu.se>
+Description: This package contains three different functions for solving what is called the knapsack problem.
+    The first one is Brute force search,the second one uses dynamic programming and the last one is the Greedy aproach.
+License: MIT+ file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.0
+Imports: parallel
+Suggests: knitr,rmarkdown, testthat
+VignetteBuilder: knitr

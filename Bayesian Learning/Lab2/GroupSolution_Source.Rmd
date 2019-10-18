@@ -1,0 +1,716 @@
+---
+title: "Bayesian Learning - Computer Lab 2"
+author: "Stefano Toffol (steto820) and Nahid Farazmand (nahfa911)"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+documentclass: book
+classoption: openany
+output: 
+  bookdown::pdf_document2:
+    toc: false
+    number_sections: false
+header-includes:
+    - \usepackage{caption}
+    - \usepackage{float}
+    - \usepackage[makeroom]{cancel}
+    - \floatplacement{figure}{H}
+    - \usepackage{gensymb}
+---
+
+```{r setup & libraries, include=FALSE}
+
+knitr::opts_chunk$set(echo = F, message = F, error = F, warning = F,
+                      fig.align='center', out.width="70%")
+
+```
+
+## Question 1 - Linear and polynomial regression
+
+$~$
+
+We are asked to analyze the dataset of daily temperatures (in Celsius degrees) in the city of Linköping during the year 2016. The total amount of observations are 366 (one per each day of the year) and there are two available variables:
+
+* _temp_, the response variable itself;
+
+* _time_, a value within the interval $(0,1]$ and given by the formula $time = \frac{\text{\# days since the beginning of the year}}{366}$
+
+We are asked to perform a Bayesian analysis for the following quadratic regression:
+
+\begin{equation*}
+  temp = \beta_0 + \beta_1 \cdot time + \beta_2 \cdot time^2 + \epsilon, 
+  \quad \epsilon \sim \mathcal{N}(0, \sigma^2)
+\end{equation*}
+
+```{r}
+
+# ------------------------------------------------------------------------------
+# Q1 - Intro
+# ------------------------------------------------------------------------------
+
+# Read the data
+data <- read.table("TempLinkoping.txt", header = T)
+n <- nrow(data)
+p <- ncol(data)
+
+```
+
+To have an idea of what to expect as results from our analysis, we made a brief research and from the [Wikipedia page](https://en.wikipedia.org/wiki/Link%C3%B6ping) we found a table containing the various average monthly temperatures recorded in a location close to the city center over the years 2002-2015 (Figure \@ref(fig:Q1-table-temp)). If we look at the row of the daily mean temperature we can see how these range between $-2.2\; \degree C$ (January/February) and $+17.3\; \degree C$ (July). Considering that our model describe the average behaviour during the year, we would like our prior to describe a similar trend.
+
+$~$
+
+```{r Q1-table-temp, out.width="100%", out.height="100%", fig.cap="Table of the average monthly temperatures during the period 2002-2015 in Linköping."}
+
+library(ggplot2)
+# knitr::include_graphics("Linköping_temperatures.jpeg")
+library('jpeg')
+myjpeg <- readJPEG(source = "Linköping_temperatures.jpeg", native = T)
+
+res <- dim(myjpeg)[2:1]
+plot(1, 1, xlim=c(1,res[1]), ylim=c(1,res[2]), asp=1, type='n', xaxs='i',
+     yaxs='i', xaxt='n', yaxt='n', xlab='', ylab='', bty='n')
+rasterImage(myjpeg, 1, 1, res[1], res[2])
+
+```
+
+
+```{r}
+
+old_text = "plot the given time series in Figure ???. As we can see, the temperature follows indeed a quadratic term, showing a consistent amount of variation in the observation even within the same season. We also observe how the winter 2016-2017 appears milder than the previous one, since on the end of the time series the temperature is tendentially right above 0 degree C, while January showed much lower temperatures, fluctuating around -10 degree C.  
+Tendentially, we would expect our model to perform well on the provided data, managing to capture the general trend. However, due to the high variation of the data, we would expect a relevant prediction error."
+
+```
+
+
+```{r Q1-plot, fig.cap="Time series of the temperatures of Linköping in 2016", eval=F}
+
+ggplot(data, aes(x = time*366, y = temp)) +
+  geom_line(size = 1, col = "steelblue") +
+  labs(x = "Day of the year", 
+       y = expression(paste("Temperature (", degree, "C)", sep = ""))) +
+  theme_light()
+
+```
+
+
+$~$
+
+### a) Determining the prior distribution of the model parameters
+
+```{r}
+
+# ------------------------------------------------------------------------------
+# Q1 - a)
+# ------------------------------------------------------------------------------
+
+# Generator of random numbers from inverse chisquare:
+rinvchisq <- function(draws, n, tau) {
+  chi_square <- rchisq(draws, n-1)
+  return( tau*(n-1)/chi_square )
+}
+
+# Number of draws
+NumDraws <- 100
+
+```
+
+We are asked to use the conjugate prior of the linear regression model. The model is the following:
+
+\begin{equation*}
+  \begin{split}
+    \beta \mid \sigma^2 \sim \mathcal{N}(\mu_0, \; \sigma^2\Omega_0^{-1}) \\
+    \sigma^2 \sim Inv-\chi^2(\nu_0, \; \sigma^2_0)
+  \end{split}
+\end{equation*}
+
+As starting parameters we are going to use: 
+
+\begin{equation*}
+  \mu_0 = (-10, 100, -100)^T; \quad \Omega_0 = 0.01 \cdot I_3; \quad \nu_0 = 4; \quad
+  \sigma^2_0 = 1\,.
+\end{equation*}
+
+These however are not granted to return plausible values for the $\beta$ of our problem. In fact we would expect the temperatures in Sweden to be included at maximum between $-30\; \degree C$ and $+30\; \degree C$. Therefore linear combinations generating values totally outside this range are, to our beliefe, extremely unlikely, if not impossible.  
+We should then simulates draws from the joint prior of all the parameters and then draw the regression curve. To help us generating multivariate normal observation, we will use the package `mvtnorm` of `R`. To instead generate random numbers from $Inv-\chi^2$ we will use the same generator created in the previous lab (included in the appendix).  
+There was no specified number of values to be tested, so we decided to set the number of draws to `r NumDraws`. For each iteration $i$ we will draw the various random numbers following this order:
+
+* We will first generate a value, that we will call $\sigma_i^2$, for $\sigma_0^2$ from the $Inv-\chi^2$ distribution;
+
+* We will use the previously generated value for the variance to generate the three regression coefficients $\beta_i$, from the multivariate normal distribution of the prior $\beta_0$;
+
+* To an existing plot, we will add a line corresponding to the regression curve generated from the randomly drawn $\beta_i$.
+
+The results for the starting values defined above are summarized in Figure \@ref(fig:Q1a-start). As we can see, this 100 draws result quite messy and sparse accross the graph. The regressions sometimes even predict temperature higher than $+50\; \degree C$ (or lower than $-50\; \degree C$) and in some cases one of the terms (either the quadratic or the linear one) is approximately zero, which leads to unrealistic results. Moreover some of the generated trends are close to linearity, which is not plausible for the problem we are asked to solve.
+
+$~$
+
+```{r Q1a-start, echo=T, fig.cap="100 possible regression curves drawn from our priors of the parameters $\\sigma_0^2$ and $\\beta_0$; the red line corresponds to the mean of the $\\beta_0$ distribution."}
+
+library(mvtnorm)
+set.seed(9876)
+
+# Setting the starting parameters
+nu_0 <- 4
+mu_0 <- c(-10,100,-100)
+omega_0 <- 0.01*diag(3)
+omega_0_inv <- solve(omega_0)
+sigma_0 <- 1
+
+
+# ------------------------------------------------------------------------------
+# Generate from the joint prior:
+# ------------------------------------------------------------------------------
+
+# Number of draws
+NumDraws <- 100
+# Allocate the space for the different beta
+matrix_beta_0 <- matrix(NA, NumDraws, 3)
+
+# Crate function for the plot:
+poly_plot <- function(x, beta) {
+  return( beta[1] + x*beta[2] + x^2*beta[3])
+}
+# Empty plot where to draw the various lines
+p1 <- ggplot(data = data.frame(0)) + xlim(c(0, 1)) + theme_light()
+
+for(i in 1:NumDraws) {
+  
+  # First pick a value for the variance (sigma)
+  temporary_sigma <- rinvchisq(1, nu_0, sigma_0)
+  # Then generate samples for beta
+  matrix_beta_0[i,] <- rmvnorm(1, mu_0, omega_0_inv*temporary_sigma)
+  # Draw the line
+  p1 <- p1 + stat_function(fun = poly_plot, args = list(beta = matrix_beta_0[i,]),
+                           col = "black", alpha = 0.5)
+}
+
+# Add to the plot the line corresponding to the average of the NumDraws regression lines
+p1 <- p1 + stat_function(fun = poly_plot, args = list(beta = mu_0), 
+                         col = "red", size = 1)
+
+print(p1)
+
+```
+  
+In order to correct the observed behaviour and make it match our beliefes, we decided to reduce the impact of the variance $\Omega_0$ and to slightly "pull up" the regression curve. In order achieve the desired results, we set $\Omega_0 = 0.1\cdot I_3$ and $\beta_0 = (-5, 100, -100)$ (we only increase of $+5\; \degree C$ the intercept value). We also decided to modify the degrees of freedom of the $Inv-\chi^2$, which represent the degree of certanty of our prior: even though the natural variability of the climate leaves us quite unsure of what we will actually observe in the data, the information we got are quite reliable and resulting from various years of observations. We therefore modified $\nu_0$ to 30, which means the prior will weight less than $10\%$ in the distribution of the posterior.  
+The outcome of these new set of parameters is displayed in Figure \@ref(fig:Q1a-update). In this case, even though the regression lines are still fairly variable, the span of the generated lines seems plausible and we consider ourselves satisfied with the result.
+
+```{r Q1a-update, fig.cap="100 possible regression curves drawn from our priors of the updated parameters $\\sigma_0^2$ and $\\beta_0$; the red line corresponds to the mean of the $\\beta_0$ distribution."}
+
+# Change the starting parameters
+# We want less variation and to increase slightly the intercept, 
+# the average trends behaviour seem fine instead
+
+omega_0 <- 0.1*diag(3)
+omega_0_inv <- solve(omega_0)
+mu_0[1] <- -5
+nu_0 <- 30
+
+# Empty plot where to draw the various lines
+p2 <- ggplot(data = data.frame(0)) + xlim(c(0, 1)) + theme_light()
+
+for(i in 1:NumDraws) {
+  
+  # First pick a value for the variance (sigma)
+  temporary_sigma <- rinvchisq(1, nu_0, sigma_0)
+  # Then generate samples for beta
+  matrix_beta_0[i,] <- rmvnorm(1, mu_0, omega_0_inv*temporary_sigma)
+  # Draw the line
+  p2 <- p2 + stat_function(fun = poly_plot, args = list(beta = matrix_beta_0[i,]),
+                           col = "black", alpha = 0.5)
+}
+
+# Add to the plot the line corresponding to the average of the NumDraws regression line
+p2 <- p2 + stat_function(fun = poly_plot, args = list(beta = mu_0), 
+                         col = "red", size = 1)
+# p2 <- p2 + geom_line(aes(x = time, y = temp), data = data,
+#                      size = 1, col = viridis::viridis(2)[2])
+
+print(p2)
+
+```
+
+$~$
+
+### b) Simulate from the joint posterior and the marginal posterior of the distribution
+
+We will now simulate from joint posterior distribution of $\beta_0, \beta_1, \beta_2$ and $\sigma^2$. From the theory saw during the lectures we know that:
+
+\begin{equation*}
+  \begin{split}
+    \sigma^2 \mid y \sim Inv-\chi^2(\nu_n,\sigma_n^2) \\
+    \beta \mid \sigma^2,y \sim \mathcal N(\mu_n,\sigma^2\Omega_n^{-1})
+  \end{split}
+\end{equation*}
+
+In other words the posteriors obtained depend on new parameters, derived by updating the ones of the prior (which are of the same family, so they actually are _conjugate priors_) with the information obtained from the data. These new parameters are: 
+
+\begin{equation*}
+  \begin{split}
+    \Omega_n =& \; X^TX + \Omega_0 \\
+    \mu_n =& \; (X^TX + \Omega_0)^{-1}(X^TX\hat{\beta} + \Omega_0\mu_0) \\
+    \nu_n =& \; \nu_0 + n \\
+    \sigma_n^2 =& \; \frac{1}{\nu_n}[\nu_0\sigma_0^2 + 
+    (y^Ty + \mu_0^T\Omega_0\mu_0 - \mu_n^T\Omega_n\mu_n)]
+  \end{split}
+\end{equation*}
+
+As before, we will first generate a possible value for the parameter $\sigma^2$ and then use that to obtain a random sample of the 3-dimensional vector of $\beta$, which corresponds (approximately) to randomly generate from the marginal posterior distribution of the $\beta$ distribution. The code to complete the request is the following:
+
+```{r echo=T}
+
+# ------------------------------------------------------------------------------
+# Q1 - b)
+# ------------------------------------------------------------------------------
+
+# Set the number of parameters
+k <- 3
+# Set the number of samples
+NumDraws <- 1000
+
+# Create the new, updated parameters for the posterior
+nu_n <- nu_0 + n - k
+X <- matrix(c(rep(1, n), data$time, data$time^2), n, 3)
+omega_n <- t(X)%*%X + omega_0
+y <- data$temp
+beta_hat <- solve(t(X)%*%X) %*% (t(X)%*%y)
+mu_n <- solve(t(X)%*%X + omega_0) %*% (t(X)%*%X %*% beta_hat + omega_0 %*% mu_0)
+sigma_n <- (1/nu_n)*(nu_0*sigma_0 + (t(y)%*%y + t(mu_0)%*%omega_0%*%mu_0 
+                                    - t(mu_n)%*%omega_n%*%mu_n))
+
+# Allocate the space for the betas and sigmas (useful for the histogram afterwards)
+matrix_beta_n <- matrix(NA, NumDraws, 3)
+vector_sigma_n <- rep(NA, NumDraws)
+
+for(i in 1:NumDraws) {
+  
+  # First pick a value for the variance (sigma)
+  vector_sigma_n[i] <- as.numeric(rinvchisq(1, nu_n, sigma_n))
+  # Then generate samples for beta
+  matrix_beta_n[i,] <- rmvnorm(1, mu_n, solve(omega_n)*vector_sigma_n[i])
+
+}
+
+```
+
+We are then asked to plot the marginal posteriors for each parameter as a histogram. We do not have an explicit solution to this distribution, and will require to integrate over $\sigma$ the probability density of $\beta \mid y, \sigma$. We can get around this problem by first generating a big sample from the posterior distribution of $\sigma$ and then used those generated numbers to generate the $\beta$ coefficients: in this way the $\beta$ will be simulated following the distribution of $\sigma$, which practically is an approximation for the computation of the integral we were supposed to solve.  
+So we will then simply plot the individual columns of the matrix containing the generated $\beta$ (Figure \@ref(fig:Q1b-hist)). As we can observe, the distributions of the marginal are symmetric and relatively concentrated around their mode. The mean of their distribution is $\mu_n$, which is equal to the vector $[`r round(mu_n[1], 4)`, \; `r round(mu_n[2], 4)` \; \text{and} \; `r round(mu_n[3], 4)`]$ respectively. As we can see, the mean value of the parameters changed from the prior we set. In particular, the posterior intercept actually got back to almost $-10$, the value that we originally started with: the changed we made for the prior of $\beta_0$ was therefore in the wrong direction.  
+On the other hand, both $\beta_2$ and $\beta_3$ got shrinked and the biggest change was observed for the quadratic term, which is decreased by almost 15 in respect to our prior belief. The observed data is therefore showing a more restrained trend. XMoreover the two coefficients are not equal anymore as our prior, and since $\beta_2<\beta_1$ we expect the temperatures of January to be lower to the ones of December.  
+Finally we observe how much the value of $\sigma^2$ increased compared to our prior, which was $\sigma_0^2 = 1$.
+
+```{r Q1b-hist, fig.cap="Histograms of the marginal posterior distribution of the $\\beta$ and $\\sigma^2$ parameters", out.width="100%"}
+
+# Generate from the marginal posterior (T-distribution)
+# Beta_posterior <- rmvt(n = 1000, delta = mu_n, 
+#                        sigma = as.numeric(sigma_n)*solve(omega_n), df = nu_n)
+
+# Histogram of Beta1
+p1 <- ggplot(data = data.frame(x = matrix_beta_n[,1]), aes(x = x ))+
+  geom_histogram(aes(y = ..density..), bins = 30,
+                 col = "black", fill = "steelblue") +
+  geom_density(col = "red", size = 1) +
+  labs(x = expression(beta[1])) +
+  theme_light()
+
+# Histogram of Beta2
+p2 <- ggplot(data = data.frame(x = matrix_beta_n[,2]), aes(x = x ))+
+  geom_histogram(aes(y = ..density..), bins = 30,
+                 col = "black", fill = "steelblue") +
+  geom_density(col = "red", size = 1) +
+  labs(x = expression(beta[2])) +
+  theme_light()
+
+# Histogram of Beta3
+p3 <- ggplot(data = data.frame(x = matrix_beta_n[,3]), aes(x = x ))+
+  geom_histogram(aes(y = ..density..), bins = 30,
+                 col = "black", fill = "steelblue") +
+  geom_density(col = "red", size = 1) +
+  labs(x = expression(beta[3])) +
+  theme_light()
+
+# Histogram of Sigma
+p4 <- ggplot(data = data.frame(x = vector_sigma_n), aes(x = x ))+
+  geom_histogram(aes(y = ..density..), bins = 30,
+                 col = "black", fill = "steelblue") +
+  geom_density(col = "red", size = 1) +
+  labs(x = expression(sigma^2)) +
+  theme_light()
+
+# Put the plots together
+gridExtra::grid.arrange(p1, p2, p3, p4, ncol = 2)
+
+```
+
+Finally, we were asked to compute the $95\%$ equal tail posterior probability intervals for every value of _time_ estimated using the different sets of coefficients we generated before. The middle brown line in Figure \@ref(fig:Q1b-lines) is the median of all the $\beta$ generated from our joint distribution. The dashed red lines representing the $95\%$ credible interval were drawn taking the quantiles (0.025; 0.975) of the predicted $\tilde y$ at each point in time. We also included the $95\%$ prediction interval, obtained by adding $\pm 1.96\sigma_n$ to the extremes of the mean of the joint posterior distribution (given by $\mu_n$).  
+The credible interval band is quite narrow and barely contains $10\%$ of the observed data points. This finding does not surprise us: the confidence band in fact is related to the regression curve, which is a summary of the average behaviour of the response for each moment in time. The uncertanty we are plotting is therefore the one related to the trend of the data, not to the actually observed data. In other words, we are not taking into account the random error $\epsilon$, which is normally distributed with variance $\sigma^2_n = `r round(sigma_n, 4)`$. If we want an interval which really contains (on average) $95\%$ of the data points, we have to refer to the prediction interval (green dotted line), which in fact almost contains that proportion of observations.
+
+$~$
+
+```{r echo=T}
+
+# Median of the marginal posterior
+beta_median_posterior <- apply(matrix_beta_n, 2, median)
+
+# Estimation of the whole dataset with 1000 different beta parameters
+estimated_y <- matrix(0, n, NumDraws)
+for(j in 1:NumDraws) {
+  estimated_y[,j] <- poly_plot(data$time, matrix_beta_n[j,])
+}
+# Computing the 95% credible interval
+extremes_interval_curve <- apply(estimated_y, 1, function(x) 
+  return( c(quantile(x, 0.025), quantile(x, 0.975)) ))
+
+# Mean of the marginal posterior and related prediction interval
+beta_mean_posterior <- apply(matrix_beta_n, 2, mean)
+pred_inter_up <- c(mu_n[1,1] + qnorm(0.025)*sqrt(sigma_n[1,1]), mu_n[2:3,1])
+pred_inter_down <- c(mu_n[1,1] + qnorm(0.975)*sqrt(sigma_n[1,1]), mu_n[2:3,1])
+
+```
+
+$~$
+
+```{r Q1b-lines, fig.cap="Joint posterior median of the $\\beta$ parameters. The $95\\%$ credible interval, together with the $95\\%$ prediction interval, have been plotted over the observed data points.", out.width="80%"}
+
+p1 <- ggplot(data, aes(x = time)) + 
+  geom_point(aes(x = time, y = temp), data = data, 
+             col = "steelblue", alpha = 0.8, cex = 2) +
+  # stat_function(aes(x = time), data = data, fun = poly_plot, 
+  #               args = list(beta = beta_median_marginal)) +
+  stat_function(aes(col = "Posterior median"), fun = poly_plot, 
+                args = list(beta = beta_median_posterior), size = 1) +
+  stat_function(aes(col = "95% Prediciton interval"), fun = poly_plot, 
+                args = list(beta = pred_inter_up), size = 1, lty = 3) +
+  stat_function(aes(col = "95% Prediciton interval"), fun = poly_plot, 
+                args = list(beta = pred_inter_down), size = 1, lty = 3) +
+  geom_line(aes(y = extremes_interval_curve[1,], col = "95% Credible interval"), 
+            lty = 2, size = 1) +
+  geom_line(aes(y = extremes_interval_curve[2,], col = "95% Credible interval"), 
+            lty = 2, size = 1) +
+  scale_color_manual(values = c("red", "forestgreen", "chocolate1"), 
+                     name = "Lines legend:") +
+  labs(x = "Time", y = "Temperature") +
+  theme_light() #+
+  #theme(legend.position = "bottom")
+
+p1
+
+```
+
+### c) Posterior distribution of the highest temperature
+
+```{r}
+
+# ------------------------------------------------------------------------------
+# Q1 - c)
+# ------------------------------------------------------------------------------
+
+beta_posterior <- as.data.frame(matrix_beta_n)
+beta_posterior$X_tilda <- (-1*beta_posterior[,2])/(2*beta_posterior[,3])
+
+```
+
+In order to get the time with the highest expected temperature (that we will call $\tilde x$) we will reuse the $\beta$ generated in the previous step. Again, the posterior variance $\sigma^2_n$ will not appear in our computations, since we are interested in the mean value of the model $X\beta$.  
+Since the distribution we have is unimodal, we can find $\tilde x$ for each generated set of coefficients taking the derivative of $f(time)$:
+
+\begin{equation*}
+  \begin{split}
+    f(time) = \beta_0 + \beta_1 \cdot time + \beta_2 \cdot time^2 \quad 
+    \rightarrow \quad \frac{\partial f(time)}{\partial time} = \beta_1 + 2\beta_2 
+    \cdot time = 0 \quad \rightarrow \quad \tilde x = \frac{-\beta_1}{2\beta_2}
+  \end{split}
+\end{equation*}
+
+From the plot in Figure \@ref(fig:Q1c-hist), we can see that from our previously generated 1000 samples of $\beta$, the values of $\tilde x$ span between 0.53 and 0.56, which corresponds to almost `r round(0.03*366)` days. If we consider its $95\%$ credible interval what we get is $\left[`r round(quantile(beta_posterior$X_tilda, 0.025), 4)`, `r round(quantile(beta_posterior$X_tilda, 0.975), 4)`\right]$, which corresponds to a range of `r round((quantile(beta_posterior$X_tilda, 0.975) - quantile(beta_posterior$X_tilda, 0.025))*366, 2)` days, which is quite precise. The mean value of the sample distribution is `r round(mean(beta_posterior$X_tilda)*366, 4)`, which correspond to the date `r as.Date(mean(beta_posterior$X_tilda)*366, origin = "2016/01/01")`. The value found is totally plausible since July is the month that also according to our prior information has the highest daily mean during the year.
+
+$~$
+
+```{r Q1c-hist, fig.cap="Histogram of $\\tilde{x}$, the values of \\textit{time} corresponding to the highest predicted average temperature."}
+
+beta_posterior <- as.data.frame(matrix_beta_n)
+beta_posterior$X_tilda <- (-1*beta_posterior[,2])/(2*beta_posterior[,3])
+  
+###------- Histogram of X tilda
+ggplot(data = data.frame(x = beta_posterior$X_tilda), aes(x = x,  y = ..density..))+
+  geom_histogram(aes(y = ..density..), bins = 30,
+                 col = "black", fill = "steelblue") +
+  geom_density(col = "red", size = 1.1) +
+  labs(x = expression(tilde(x)))+
+  theme_light()
+
+```
+
+$~$
+
+### d) Priors for the estimation of a polynomial model of order 7
+
+In order to avoid overfitting when trying to estimate a higher order polynom we will try to implement some sort of regularization. We think that the _lasso_ is probably the most suitable solution. From the theory we know, in the Bayesian world the _lasso_ corresponds to setting the prior of the marginal $\beta$ distribution to the _Laplace_ distribution:
+
+\begin{equation*}
+  \beta \mid \sigma^2 \sim Laplace\left(0, \frac{\sigma^2}{\lambda}\right)
+\end{equation*}
+
+The distribution for $\sigma^2$ remains unchanged. In other words, together with changing the distribution, we are setting the paramter $\mu_0 = (0,0,0)$ and $\Omega_0 = \lambda \cdot I_3$, where $\lambda$ represents the penalizing factor. We can imagine to set it equal to a value between $10$ and $100$ (depending on the problem and the informations we have), or using _cross-validation_ to find out which value is the best. Sticking to the Bayesian approach, we could set another prior for the parameter $\lambda$ itself. We could hypothesize $\lambda \sim Gamma\Big(\frac{\eta_0}{2}, \frac{\eta_0}{2\lambda_0}\Big)$, setting a relatively low $\eta_0$ (since we are not sure about our prior beliefes) and a high $\lambda_0$ (because we want to avoid overfitting).  
+One could also have used the _Ridge_ regression, which has an equivalent prior but with the $\beta$ being distributed as a Gaussian. However, the _Ridge_ regression does not set to exactly zero the parameters and, since we are expecting a 7-degree polynom to overfit our data, it may not be the best solution. 
+
+```{r}
+
+# ------------------------------------------------------------------------------
+# Q1 - d)
+# ------------------------------------------------------------------------------
+
+```
+
+\newpage
+
+## Question 2 - Posterior approximation for classification with logistic regression 
+
+$~$
+
+```{r}
+
+# ------------------------------------------------------------------------------
+# Q2 - Intro
+# ------------------------------------------------------------------------------
+
+data <- read.delim("WomenWork.dat", header = T, sep="")
+y <- data$Work
+x <- data[,-1]
+n <- nrow(data)
+p <- ncol(x)
+
+```
+
+In this dataset we are presented with $n=200$ observations regarding the status and consitions of a women. We are interested into understanding whether or not the woman is currently working in respect to the other variables. A brief description of the dataset can be found in Table \@ref(tab:Q2-table).
+
+```{r Q2-table}
+
+library(kableExtra)
+
+df_table <- data.frame(a = colnames(data), 
+                       b = c("Binary", "1", "Numeric", "Counts", "Counts",
+                             "Numeric", "Counts", "Counts", "Counts"),
+                       c = c("Whether or not the woman works",
+                             "Constant to the intercept", "Husband's income",
+                             "Years of education", "Years of experience",
+                             "$(\\text{Years of experience}/10)^2$", "Age",
+                             "Number of child $\\leq$ 6 years in household",
+                             "Number of child > 6 years in household"),
+                       d = c("Response", rep("Feature", 8)))
+names_table <- c("Variable", "Data type", "Meaning", "Role")
+
+kable(df_table, "latex", booktabs = T, align = "c", col.names = names_table,
+      linesep = "", escape = F, caption = "Description of the dataset.") %>%
+  column_spec(c(1), border_right = T) %>%
+  row_spec(0, bold = T) %>% 
+  kable_styling(latex_options = "hold_position", font_size = 8)
+
+```
+
+### a) Fitting the logistic regression
+
+We consider the following model for our data:
+
+\begin{equation*}
+  \Pr(y=1 \mid x) = \frac{\exp(x^T\beta)}{1+\exp(x^T\beta)}
+\end{equation*}
+
+where y is our response ($y=1$ in case the woman in working, $y=0$ otherwise); x is the 8-dimensional vector of the features.  
+We implement the logistic regression as requested, using the `glm(·)` function of `R`. The estimates of the coefficients is reported in Figure \@ref(fig:Q2-a) and the significant coefficients are the ones related to the variables: _Age, EducYears, ExpYears, NSmallChild_. Of the four of them, the number of small children has both the highest significance and the most impact on the response. In other words, according to our model a woman is likely to be unemployed if she has a son or daughter younger than 6 years. If the children is older instead it does not seem to effect the carrier of the mother.  
+The level of expertise of the subjects is linearly linked to the response, as well as the number of years spent into education. However, a quadratic trend with the job experience seems non-relevant for the prediction of the response.  
+The age of the woman does effect her job condition, with tendentially less and less chanches of being employed as she gets older. The income of the husband does not highlight any significant link with the response. 
+
+```{r}
+
+# ------------------------------------------------------------------------------
+# Q2 - a)
+# ------------------------------------------------------------------------------
+
+glmModel <- glm(Work ~ 0 + ., data = data, family = binomial)
+
+```
+
+```{r Q2-a, fig.cap = "Barplot of the estimated coefficients of the logistic regression, colored by their significance level."}
+
+# Plot of the coefficients
+
+# For labels in the legend
+library(latex2exp)
+
+s <- as.data.frame(summary(glmModel)$coef)
+features_names <- rownames(s)
+pval <- s$`Pr(>|z|)`
+df_coef <- data.frame(Variable = features_names, Coefficients = s$Estimate, 
+                      Significance = as.factor(
+                        ifelse(pval>0.05, "Non-significant",
+                               ifelse(pval>0.01, "alpha = 0.05",
+                                      ifelse(pval>0.001, "alpha = 0.01", 
+                                             "alpha = 0.001")))))
+
+ggplot(df_coef, aes(x = Variable, y = Coefficients, fill = Significance)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = rev(viridis::viridis(4)),
+                    labels = list(TeX("$\\Pr(\\hat{\\theta_p})<0.001$"), 
+                                  TeX("$\\Pr(\\hat{\\theta_p})<0.01$"),
+                                  TeX("$\\Pr(\\hat{\\theta_p})<0.05$"), 
+                                  TeX("Non-significant"))) +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 30))
+
+```
+
+```{r eval=F}
+
+# Some measures of fitness of our model 
+library(pROC)
+library(cvAUC)
+
+plot(roc(data$Work, predict(glmModel, newdata = data, type = "response")))
+cvAUC::AUC(predict(glmModel, newdata = data, type = "response"), data$Work)
+
+```
+
+$~$
+
+### b) Posterior approximation
+
+```{r}
+
+# ------------------------------------------------------------------------------
+# Q2 - b)
+# ------------------------------------------------------------------------------
+
+```
+
+We will now try to approximate the posterior distribution of the 8-dim parameter vector $\beta$ with a multivariate normal distribution. We are supposing:
+
+\begin{equation*}
+  \beta|y, X \sim \mathcal{N}\left(\tilde\beta, J^{-1}_y(\tilde\beta)\right) \quad \text{where : }
+  \begin{cases}
+    \tilde\beta \; \; & \text{is the posterior mode} \\[16pt]
+    J(\tilde\beta) = -\left.\frac{\partial^2 \ln(p(\beta|y))}
+    {\partial \beta \partial \beta^T}\right\vert_{\beta=\tilde\beta} \; \; &
+    \text{is the observed Hessian evaluated at } \tilde\beta
+  \end{cases}
+\end{equation*}
+
+Note that $\frac{\partial^2 \ln(p(\beta|y))}{\partial \beta \partial \beta^T}$ is an $8 \times 8$ matrix with second derivatives on the diagonal and cross-derivatives $\frac{\partial^2 \ln(p(\beta|y))}{\partial \beta_i \partial \beta_j}$ on the off-diagonal. We will approximate it numerically through the function `optim(·)` of `R`. As a prior, we will use $\beta \sim \mathcal{N}(0, \tau^2I)$ with $\tau = 10$ ($\tau^2 = 100$).  
+Using this sort of distribution and model, the formula for the log-likelihood is the following:
+
+\begin{equation*}
+  \ln\Big(p(\boldsymbol{y} \mid \boldsymbol{X}, \beta)\Big) = \ln\left(\prod_{i=1}^n 
+  \frac{[\exp(x_i^T\beta)]^{y_i}}{\exp(1+x_i^T\beta)}\right) = \sum_{i=1}^n
+  y_i (x_i\beta) - \sum_{i=1}^n \ln\Big(1+\exp(x_i\beta)\Big)
+\end{equation*}
+
+We solved the task using the following code:  
+
+$~$
+
+```{r echo=T}
+
+# Set the parameters of the prior distribution
+beta_0 <- as.vector(rep(0, p))
+tau_2 <- 100
+variance_0 <- tau_2 * diag(p) 
+
+# Create a function to compute the posterior distribution
+logistic_post <- function(starting_beta, mu_prior, var_prior, x, y) {
+  
+  # For some reason we were not able to make a matrix product even using Mattias' code
+  loglik <- apply(x, 1, function(row) sum(row*starting_beta))
+  loglik <- sum(y*loglik) - sum(log(1+exp(loglik)))
+  # Compute the density according to the normal prior
+  logprior <- dmvnorm(starting_beta, mu_prior, var_prior, log = T)
+  
+  return( loglik + logprior )
+  
+}
+
+# Numerical optimization
+optimal_res <- optim(beta_0, logistic_post, gr = NULL, beta_0, variance_0, x, y,
+                     method = "BFGS", control = list(fnscale = -1), hessian = T)
+
+# Extract the results
+post_beta_mode <- optimal_res$par
+post_cov <- solve(-optimal_res$hessian)
+colnames(post_cov) <- colnames(x)
+rownames(post_cov) <- colnames(x)
+approx_post_sd <- sqrt(diag(post_cov))
+
+```
+
+$~$
+
+Using this procedure, the estimated $\tilde\beta$ are: `r round(post_beta_mode, 4)` for the variables *`r colnames(x)`* respectively. Just for curiosity, we checked how much these estimates differ from the ones obtained using `glm(·)`. It turned out that they were almost identical, with the biggest difference related to _NBigChild_: the two $\tilde \beta$ values differ of only $`r round(max((post_beta_mode - s$Estimate)/abs(s$Estimate)*100), 2)`\%$.  
+Regarding the inverse observed information $J^{-1}_y(\tilde\beta)$, the estimation of the matrix is equal to:
+
+$~$
+
+```{r results='asis', fig.cap="Approximate posterior covariance matrix of $\\tilde─\\beta$. It corresponds to the observed information $J^{-1}_y(\\tilde\\beta)$."}
+
+library(xtable)
+print(xtable(post_cov, digits = 6, caption = "Approximate posterior covariance matrix of
+             $\\tilde \\beta$. It corresponds to the observed information
+             $J^{-1}_y(\\tilde \\beta)$."), scalebox='0.85', comment = F)
+
+```
+
+$~$
+
+We are then asked to compute a $95\%$ credible interval for the coefficient $\tilde \beta$ for the variable _NSmallChild_. In order to get it, we can exploit the multivariate-normality of the coefficients, which simplifies to a univariate normal distribution when only one specific $\tilde\beta_j$ is considered. In fact, $\tilde\beta_j \sim \mathcal{N}\Big(\tilde\beta_j\;,\; J^{-1}_y(\tilde\beta)_{jj}\Big)$ and its $95\%$ credible interval is $\tilde\beta_j \pm 1.96\sqrt{J^{-1}_y(\tilde\beta)_{jj}}$. The values found are: $[`r round(post_beta_mode[7]-qnorm(0.975)*approx_post_sd[7], 6)`, \; `r round(post_beta_mode[7]+qnorm(0.975)*approx_post_sd[7], 6)`]$.
+
+\newpage
+
+### c) Simulation and prediction
+
+```{r}
+
+# ------------------------------------------------------------------------------
+# Q2 - c)
+# ------------------------------------------------------------------------------
+
+```
+
+We are asked to estimate the predictive distribution for the response for a 40 year old woman, with two children (3 and 9 years old), 8 years of education, 10 years of experience and a husband with an income of 10. In order to generate predictions for the model we will use the approximate distribution of the parameters obtained in step 2b).  
+We already know that the parameters follow the posterior distribution $\mathcal{N}\left(\tilde\beta, J^{-1}_y(\tilde\beta)\right)$ and we have numerically estimated the posterior mode and variance of the distribution. Using these optimal value we can generate various $\tilde \beta$ and use them to compute the probability of `Work` through the logistic function. Once the probabilities are obtained, we can then simulate the outcome of the associated $Bernoulli$ distribution using a second random number generator. The code to solve this task is the following:
+
+```{r echo=T}
+
+# X-values for the target prediction
+data_pred <- c(1, 10, 8, 10, 1, 40, 1, 1)
+
+# Time to generate! We will use the approximate distribution obtained before
+NumDraws <- 1000
+# We generate many betas from the posterior of the parameters
+many_beta_pred <- rmvnorm(1000, post_beta_mode, post_cov)
+# We create a function to compute the logistic regression AND 
+# draw from a Bernoulli distribution using the computed probability
+logistic_fun <- function(beta, x) {
+  pi <- exp(as.numeric(x%*%beta)) / (1+exp(as.numeric(x%*%beta)))
+  return( rbinom(1, 1, pi) )
+}
+# We know estimate the response for each draw of beta
+predictions_y <- apply(many_beta_pred, 1, logistic_fun, data_pred) 
+
+```
+
+In Figure \@ref(fig:Q2c-barplot) we can observe the outcome of `r NumDraws` simulated predictions. According to our model, for this specific subject the probability of being working is quite low, $`r round(mean(predictions_y)*100, 2)`\; \%$. We are therefore pretty confident that this typology of subject will be unemployed.
+
+```{r Q2c-barplot, fig.cap="Barplot of the predicted working status (sample dimension of 1000) for a 40-years-old woman, with one small and one big child, 8 years of education, 10 years of experience and a husband with an income of 10."}
+
+pred_plot <- as.factor(predictions_y)
+levels(pred_plot) <- c("Not working", "Working")
+
+ggplot() +
+  geom_bar(aes(x = pred_plot), col = "black", fill = "steelblue",
+           width = 0.25) +
+  labs(x = expression(tilde(y)), y = "Frequency") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 4, scale = 0.1)) +
+  theme_light()
+
+```
+
+\newpage
+
+## Appendix 
+
+```{r, ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
+```

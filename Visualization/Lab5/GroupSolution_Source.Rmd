@@ -1,0 +1,617 @@
+---
+title: "Group 4: Visualization, Lab 5"
+author: "Annalena Erhard, Stefano Toffol"
+date: "3 October 2018"
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r Libraries, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tm) 
+library(wordcloud) 
+library(RColorBrewer) 
+library(plotly)
+library(dplyr)
+library(crosstalk)
+library(ggplot2)
+library(GGally)
+library(knitr)
+library(png)
+library(grid)
+library(gridExtra)
+
+```
+
+## Assignment 1
+
+$~$
+
+#### Task 1.1
+
+<center>
+
+```{r task 1.1.1, include=TRUE, warning=FALSE, out.width="80%", out.height="80%"}
+
+five <- readLines("data/Five.txt")
+five <- five[-88]
+# Read original file containing good reviews; exclude line 88 being in spanish
+five <- five[-which(five=="")]
+# Eliminate empty lines
+
+onetwo <- readLines("data/OneTwo.txt") 
+# Read original file bad reviews
+onetwo <- onetwo[-which(onetwo=="")]
+# Eliminate empty lines
+
+# Transform every word in lowercase (for stopwords recognition)
+# Write functions to save modified data (used in Phrase Net)
+five <- as.data.frame(unlist(lapply(five, tolower)), stringsAsFactors = F)
+# write.table(five, "Five_lower.txt", sep='\n', row.names = F, col.names = F, quote = F)
+onetwo <- as.data.frame(unlist(lapply(onetwo, tolower)), stringsAsFactors = F)
+# write.table(onetwo, "OneTwo_lower.txt", sep='\n', row.names = F, col.names = F, quote = F)
+
+five$doc_id = 1:nrow(five) 
+onetwo$doc_id = 1:nrow(onetwo) 
+
+colnames(five)[1]<-"text" # Here we interpret each line in the document as separate document 
+colnames(onetwo)[1]<-"text" # Here we interpret each line in the document as separate document 
+
+
+## word cloud for "five" data----------------------
+# Creating corpus (collection of text data)
+mycorpus1 <- Corpus(DataframeSource(five))  
+mycorpus1 <- tm_map(mycorpus1, removePunctuation) 
+mycorpus1 <- tm_map(mycorpus1, function(x) removeWords(x, stopwords("english"))) 
+# filtered_five <- data_frame(text = rep(NA, nrow(five)))
+# for(i in 1:nrow(five)) {
+#   filtered_five$text[i] <- gsub("\\s+", " ", mycorpus1[[i]][[1]])
+# }
+# write.table(filtered_five, "Five_filtered.txt", sep='\n', row.names = F, col.names = F, quote = F)
+
+
+# Creating term-document matrix 
+tdm1 <- TermDocumentMatrix(mycorpus1) 
+m1 <- as.matrix(tdm1) # here we merge all rows 
+v1 <- sort(rowSums(m1),decreasing=TRUE) # Sum up the frequencies of each word 
+d1 <- data.frame(word = names(v1),freq=v1) # Create one column=names, second=frequences 
+
+
+# Create palette of colors
+pal1 <- brewer.pal(6,"Dark2") 
+pal1 <- pal1[-(1:2)]  
+wordcloud(d1$word,d1$freq, scale=c(8,.3),min.freq=10,max.words=100, random.order=F, rot.per=.15, colors=pal1, vfont=c("sans serif","plain")) 
+
+```
+
+```{r task 1.1.2, include=TRUE, warning=FALSE, out.width="80%", out.height="80%"}
+
+
+## word cloud for "onetwo" data----------------------
+# Creating corpus (collection of text data)
+mycorpus2 <- Corpus(DataframeSource(onetwo))  
+mycorpus2 <- tm_map(mycorpus2, removePunctuation) 
+mycorpus2 <- tm_map(mycorpus2, function(x) removeWords(x, stopwords("english"))) 
+# filtered_one <- data_frame(text = rep(NA, nrow(onetwo)))
+# for(i in 1:nrow(onetwo)) {
+#   filtered_one$text[i] <- gsub("\\s+", " ", mycorpus2[[i]][[1]])
+# }
+# write.table(filtered_one, "Onetwo_filtered.txt", sep='\n', row.names = F, col.names = F, quote = F)
+
+# Creating term-document matrix 
+tdm2 <- TermDocumentMatrix(mycorpus2) 
+m2 <- as.matrix(tdm2) # here we merge all rows 
+v2 <- sort(rowSums(m2),decreasing=TRUE) # Sum up the frequencies of each word 
+d2 <- data.frame(word = names(v2),freq=v2) # Create one column=names, second=frequences 
+
+
+# Create palette of colors
+pal2 <- brewer.pal(6,"Dark2") 
+pal2 <- pal2[-(1:2)]  
+wordcloud(d2$word,d2$freq, scale=c(8,.3), min.freq=10,max.words=100, random.order=F, rot.per=.15, colors=pal2, vfont=c("sans serif","plain")) 
+
+```
+
+</center>
+
+**Analysis:**
+
+Word clouds show the frequency of a word, appearing in a text or text collection. Both of the plots seen above show the word frequencies of customer responses on a watch. As "watch" is the biggest word in both of the plots and centered in the middle it is the most frequently used word in both datasets. The smaller the words are the less often they were used in the recencions.  
+Looking at the relatively big written words in both plots, it's not possible to see which one of the data sets contains the negative or the positive recommendations. In fact, in both wordclouds the words _great_ and _like_, usually associated to positive meaning, are present with a great frequency. However, there are some words exclusively related to one dataset that show interesting insights. Among the negative reviews, the words _Amazon_, _sent_, _back_ and (not-)*working* suggests that the low votes were mainly related to a problem with the delivery or some production defects. In the other dataset instead, the words _band_, _wear_, _price_, *water*(-proof) and _nice_ praise the technical qualities of the product.
+
+$~$
+
+#### Task 1.2 & 1.3
+
+**Which properties of this watch are mentioned mostly often?**
+
+The properties of the watch that are mentioned most often in both plots are: the digital display (Figure 1.1), its being clearly readable at night and the waterproofness, even though it appears that some customers had problems with the battery (Figure 1.2).
+
+
+**What are satisfied customers talking about?**
+
+Satisfied customers think that the watch, a part from the general good properties mentioned above, it has great value for money (Figure 1.3 and focus in Figure 1.4) and, in general, is excellent, even unbeatable, luminous, clear and durable.
+
+<center>
+
+```{r five_1, fig.cap="**Figure 1.1, Five: display qualities.**", out.width="900px", echo=F}
+img1 <- rasterGrob(as.raster(readPNG("images/five_display.png")), interpolate = F)
+grid.arrange(img1)
+```
+
+```{r five_2, fig.cap="**Figure 1.2, Five: 2nd set of linking words.**", out.width="900px", echo=F}
+img1 <- rasterGrob(as.raster(readPNG("images/five_link2.png")), interpolate = F)
+grid.arrange(img1)
+```
+
+```{r five_3, fig.cap="**Figure 1.3, Five: 1st set of linking words.**", out.width="900px", echo=F}
+img1 <- rasterGrob(as.raster(readPNG("images/five_link1.png")), interpolate = F)
+grid.arrange(img1)
+```
+
+```{r five_price, fig.cap="**Figure 1.4, Five: value for money.**", out.width="900px", echo=F}
+img2 <- rasterGrob(as.raster(readPNG("images/five_price.png")), interpolate = F)
+grid.arrange(img2)
+```
+
+</center>
+
+**What are unsatisfied customers talking about?**
+
+Most of the unsatisfied customers claimed to have troubles with the battery, that the watch did not fulfill their expectations (Figure 1.5) and that they had various problems with the company (lack of service for the delivery, towards customers and refunding delays, Figure 1.6)
+
+
+**What are good and bad properties of the watch mentioned by both groups?**
+
+Both groups mentioned battery problems. But they also stated that is still a good product considering the money spent (Figure 1.7). 
+
+
+**Can you understand watch characteristics (like type of display, features of the watches) by observing these graphs?**
+
+The graphs, also those not reported for reasons of brevity, show quite well what the main features of the watch are. A part from the ones mentioned above, the product has a kevlar band (Figure 1.1), a stopwatch (Figure 1.2), a crystal glass, an alarm function (Figure 1.8) and has a vintage design.
+
+<center>
+
+```{r onetwo_1, fig.cap="**Figure 1.5, OneTwo: 2nd set of linking words.**", out.width="900px", echo=F}
+img1 <- rasterGrob(as.raster(readPNG("images/onetwo_link2.png")), interpolate = F)
+grid.arrange(img1)
+```
+
+```{r onetwo_amazon, fig.cap="**Figure 1.6, OneTwo: Amazon general lack of service.**", out.width="900px", echo=F}
+img1 <- rasterGrob(as.raster(readPNG("images/onetwo_amazon.png")), interpolate = F)
+grid.arrange(img1)
+```
+
+```{r onetwo_price, fig.cap="**Figure 1.7, OneTwo: value of price.**", out.width="900px", echo=F}
+img1 <- rasterGrob(as.raster(readPNG("images/onetwo_price.png")), interpolate = F)
+grid.arrange(img1)
+```
+
+```{r onetwo_alarm, fig.cap="**Figure 1.8, OneTwo: alarm function.**", out.width="900px", echo=F}
+img1 <- rasterGrob(as.raster(readPNG("images/onetwo_alarm.png")), interpolate = F)
+grid.arrange(img1)
+```
+
+</center>
+
+$~$
+
+$~$
+
+## Assignment 2
+
+$~$
+
+#### Task 2.1
+
+```{r data_reading, include=F}
+data <- read.csv("data/olive.csv")
+data$Region[data$Region==1] <- "North"
+data$Region[data$Region==2] <- "South"
+data$Region[data$Region==3] <- "Sardinia"
+data$Region <- as.factor(data$Region)
+d <- SharedData$new(data)
+```
+
+```{r task2.1, message=FALSE}
+p1 <- plot_ly(d, x=~linoleic, y=~eicosenoic, hoverinfo = "text", 
+        text = ~paste("Linoleic: ", linoleic, '</br> </br>', "Eicosenoic: ", eicosenoic),
+        color = I("#808000"), alpha = 0.75) %>%
+  layout(xaxis = list(title = "Level of linoleic"), yaxis = list(title = "Level of eicosenoic"))
+p1
+```
+
+**Analysis:**
+
+In the scatterplot displayed two distinct clusters of observations can be clearly distinguished: the first, particulary wide and with high variability in both dimensions, is composed by all units with level of _eicosenoic_ above 10; the second, extremely shrunk along the Y axis, consists exclusively of points with an _eicosenoic_ level between 1 and 3, as it can be observed by hovering over the data points.
+
+$~$
+
+#### Task 2.2
+
+```{r task2.2, message=FALSE}
+p2 <- plot_ly(d, x = ~Region, type = "histogram", histnorm = "percent", color = I("#5b3a29")) %>% 
+  layout(barmode="overlay", xaxis = list(title = "Region", titlefont = list(size = 18)), 
+         bargap = 0.15)
+
+bscols(widths=c(2, NA), filter_slider("FL", "Level of Stearic", d, ~stearic), 
+       subplot(p1,p2, titleX = T, titleY = T) %>% 
+         highlight(on = "plotly_select", off = "plotly_deselect",
+                   dynamic = T, opacityDim = I(1), persistent = T,
+                   color = c(toRGB("#450e50"), toRGB("steelblue"), toRGB("deeppink"))) %>% 
+         hide_legend())
+```
+
+**Analysis:**
+
+With the use of the brushing tool, it's possible to clearly distinguish the various regions exclusively through the levels of _linoleic_ and _eicosenoic_ combined. As shown in Figure 2.2.1, the North region actually is the first cluster identified in the previous step. The remaining two regions belong instead to the second one, but are uniquely defined by the level of _linoleic_ acid: Sardinian oils have a maximum amount of 1050, while olives from the South have a minimum value of _linoleic_ of 1057.  
+Filtering the observations based on the level of _stearic_, another difference can be spotted: considering approximately only the upper half of the total range of _stearic_, only one data belonging to the South region remains in the selection, meaning that almost the totality of oils from that region presents a low level of this acid (Figures 2.2.2). 
+
+<center>
+
+```{r 2.2.1, fig.cap="**Figure 2.2.1: Identifying regions with brushing.**", out.width="600px", echo=F}
+knitr::include_graphics("images/identify_region.png")
+```
+
+```{r 2.2.2, fig.cap="**Figure 2.2.2: Using level of _stearic_ to identify regions.**", fig.width=8, echo=F}
+img <- readPNG("images/stearic_resize.png")
+grid.raster(img)
+```
+
+</center>
+
+$~$
+
+#### Task 2.3
+
+```{r message=F}
+p3 <- plot_ly(d, x =~linoleic, y =~arachidic, hoverinfo = "text", 
+              text = ~paste("Linoleic: ", linoleic, '</br> </br>', "Arachidic: ", arachidic),
+              color = I("#808000"), alpha = 0.75) %>%
+  layout(xaxis = list(title = "Level of linoleic"), yaxis = list(title = "Level of arachidic"))
+
+subplot(p1, p3, titleX = T, titleY = T) %>%
+  highlight(on="plotly_select", off = "plotly_deselect", dynamic=T, persistent = T, opacityDim = I(1),
+            color = c(toRGB("#450e50"), toRGB("steelblue"), toRGB("deeppink"), toRGB("orange"))) %>% 
+  hide_legend()
+```
+
+**Analysis: **
+
+The scatterplot of _arachidic_ versus _linoleic_ does not have such clear bundaries between clusters of points. Nonetheless, it seems that low levels of _arachidic_ correspond also to low levels of _eicosenoic_ (Figure 2.3.1, dark purple). Moreover, being 1050 the maximum value of _linoleic_ for the selected data, it also means that those points are all belonging to the island of Sardinia. On the other hand, there is not a clear relationship between outliers for _arachidic_ values and the points present in the first plot. While a group of units with a value of _arachidic_ equal to 100 have extrimely low quantities of _eicosenoic_, being outliers in both plots (pink), the remaining oils with high concentration of _eicosenoic_ (light blue) or with _eicosenoic_ above 50 (orange) do not show any precise link with the other variable.
+
+<center>
+
+```{r 2.3.1, fig.cap="**Figure 2.3.1: Outliers for values of _arachidic_ and _eicosenoic_.**", out.height="600px", echo=F}
+knitr::include_graphics("images/outliers_resize.png")
+```
+
+</center>
+
+$~$
+
+#### Task 2.4
+
+```{r echo=FALSE, message=FALSE}
+p <- ggparcoord(data, columns = 4:11)
+
+temp <- plotly_data(ggplotly(p)) %>% 
+  group_by(X)
+d1 <- SharedData$new(temp, ~.ID, group="task4")
+
+p4_1 <- plot_ly(d1, x=~variable, y=~value)%>%
+  add_lines(line=list(width=0.3), color = I("#808000"))%>%
+  add_markers(marker=list(size=0.3),
+              text=~.ID, hoverinfo="text")
+
+d2<-SharedData$new(data, ~X, group = "task4")
+
+ButtonsX=list()
+for (i in 4:11){
+  ButtonsX[[i-3]]= list(method = "restyle",
+                        args = list( "x", list(data[[i]])),
+                        label = paste("X:", colnames(data)[i]))
+}
+
+ButtonsY=list()
+for (i in 4:11){
+  ButtonsY[[i-3]]= list(method = "restyle",
+                        args = list( "y", list(data[[i]])),
+                        label = paste("Y:", colnames(data)[i]))
+}
+
+ButtonsZ=list()
+for (i in 4:11){
+  ButtonsZ[[i-3]]= list(method = "restyle",
+                        args = list( "z", list(data[[i]])),
+                        label = paste("Z:", colnames(data)[i]))
+}
+
+menus <- list(
+  list(y=0.9, buttons = ButtonsX),
+  list(y=0.75, buttons = ButtonsY),
+  list(y=0.6, buttons = ButtonsZ))
+
+p4_2 <- plot_ly(d2, x = ~palmitic, y = ~palmitoleic, z = ~stearic, hoverinfo = "x+y+z+text", 
+                text = ~Region, alpha = 0.8) %>%
+    add_markers(color = I("#808000")) %>%
+    layout(title = "Select variable:",
+           updatemenus = menus,
+           scene = list(xaxis=list(title="X"), yaxis=list(title="Y"), zaxis=list(title="Z")))
+
+p4_3 <- plot_ly(d2, x = ~Region, type = "histogram", histnorm = "percent", color = I("#5b3a29")) %>% 
+  layout(barmode="overlay", xaxis = list(title = "Region", titlefont = list(size = 18)), 
+         bargap = 0.15)
+
+ps<-htmltools::tagList(p4_1 %>%
+                         highlight(on = "plotly_select", off = "plotly_deselect",
+                                   color = c(toRGB("red"), toRGB("steelblue"), toRGB("darkorange4")),
+                                   dynamic=T, persistent = T, opacityDim = I(1)) %>%
+                         hide_legend(),
+                       p4_2 %>%
+                         highlight(on = "plotly_select", off = "plotly_deselect",
+                                   color = c(toRGB("red"), toRGB("steelblue"), toRGB("darkorange4")),
+                                   dynamic=T, persistent = T, opacityDim = I(1)) %>%
+                         hide_legend(),
+                       p4_3 %>%
+                         highlight(on = "plotly_select", off = "plotly_deselect",
+                                   color = c(toRGB("red"), toRGB("steelblue"), toRGB("darkorange4")),
+                                   dynamic=T, persistent = T, opacityDim = I(1)) %>%
+                         hide_legend()
+)
+htmltools::browsable(ps)
+```
+
+**Analysis:**
+
+Highlighting the three regions using persistent brushing, _eicosenoic_, _oleic_ and _palmitoleic_ appears to be the influencial variables (Figure 2.4.1), even though also _linoleic_ and _palmitic_ show relatively clear distincions of the three Regions. The parallel plot also reveals the presence of two clusters between Sardinian oils (brown lines), defined by two values of _linoleic_. Moreover, _linoleic_ and _oleic_ creates two clusters each of observations from the South region (red lines).  
+Selecting the three influencial variables simultaneously and plotting them in the three dimensions (Figure 2.4.2), the three Regions are actually uniquely distinguished in three clusters: as seen in task 2.1, the North region (blue dots) is composed by oils with high concentration of _eicosenoic_; South and Sardinia island are instead divided by _oleic_. In this sense, _palmitoleic_ appears reduntat if the aim is to solely distinguish between Regions: as seen before, the 2D plot of _eicosenoic_ and _oleic_ is enough to achieve the result.
+
+<center>
+
+![**Figure 2.4.1: Influencial variables.**](images/parallel_plot.png){height=500px}
+
+$~$
+
+![**Figure 2.4.2: 3D scatter plot.**](images/3D_scatter.png){height=500px}
+
+</center>
+
+$~$
+
+#### Task 2.6
+
+The interaction operators used are: the persistant highlighting brushing and various navigation operators (camera location, viewing direction) on the data observed, reconfiguring operator (change of aesthetics) for the variables. Based on the previous steps, also a filter operator such as a slider could help to visualize and spot clusters or other type of relationships between variables and different data points. The code below shows a possible way to implement it (not working, possible problem is the ID in `sharedData` object).
+
+```{r eval=FALSE}
+filter_list <- list(
+  filter_slider("PM", "Level of Palmitic", d2, ~palmitic),
+  filter_slider("PL", "Level of Palmitoleic", d2, ~palmitoleic),
+  filter_slider("FL", "Level of Stearic", d2, ~stearic),
+  filter_slider("OL", "Level of Oleic", d2, ~oleic),
+  filter_slider("LL", "Level of Linoleic", d2, ~linoleic),
+  filter_slider("LN", "Level of Linolenic", d2, ~linolenic),
+  filter_slider("AR", "Level of Arachidic", d2, ~arachidic),
+  filter_slider("EI", "Level of Eicosenoic", d2, ~eicosenoic)
+)
+
+pF<-htmltools::tagList(bscols(widths=c(2, NA), filter_list, p4_1 %>%
+                         highlight(on = "plotly_select", off = "plotly_deselect",
+                                   color = c(toRGB("red"), toRGB("steelblue"), toRGB("darkorange4")),
+                                   dynamic=T, persistent = T, opacityDim = I(1)) %>%
+                         hide_legend()),
+                       bscols(widths=c(2, NA), filter_list, p4_2 %>%
+                         highlight(on = "plotly_select", off = "plotly_deselect",
+                                   color = c(toRGB("red"), toRGB("steelblue"), toRGB("darkorange4")),
+                                   dynamic=T, persistent = T, opacityDim = I(1)) %>%
+                         hide_legend()),
+                       p4_3 %>%
+                         highlight(on = "plotly_select", off = "plotly_deselect",
+                                   color = c(toRGB("red"), toRGB("steelblue"), toRGB("darkorange4")),
+                                   dynamic=T, persistent = T, opacityDim = I(1)) %>%
+                         hide_legend()
+)
+htmltools::browsable(pF) 
+```
+
+# Appendix
+
+```{r appendix, eval=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tm) 
+library(wordcloud) 
+library(RColorBrewer) 
+library(plotly)
+library(dplyr)
+library(crosstalk)
+library(ggplot2)
+library(GGally)
+library(knitr)
+library(png)
+library(grid)
+library(gridExtra)
+
+######### Assignment 1
+
+five = read.table("data/Five.txt",header=F, sep='\n', stringsAsFactors = F)[-41,] 
+# Read original file good reviews; exclude line 42 being in spanish
+onetwo = read.table("data/OneTwo.txt",header=F, sep='\n', stringsAsFactors = F) 
+# Read original file bad reviews
+
+# Transform every word in lowercase (for stopwords recognition)
+# Write functions to save modified data (used in Phrase Net)
+five <- as.data.frame(unlist(lapply(five, tolower)), stringsAsFactors = F)
+# write.table(five, "Five_lower.txt", sep='\n', row.names = F, col.names = F, quote = F)
+onetwo <- as.data.frame(unlist(lapply(onetwo, tolower)), stringsAsFactors = F)
+# write.table(onetwo, "OneTwo_lower.txt", sep='\n', row.names = F, col.names = F, quote = F)
+
+five$doc_id = 1:nrow(five) 
+onetwo$doc_id = 1:nrow(onetwo) 
+
+colnames(five)[1]<-"text" # Here we interpret each line in the document as separate document 
+colnames(onetwo)[1]<-"text" # Here we interpret each line in the document as separate document 
+
+
+## word cloud for "five" data----------------------
+# Creating corpus (collection of text data)
+mycorpus1 <- Corpus(DataframeSource(five))  
+mycorpus1 <- tm_map(mycorpus1, removePunctuation) 
+mycorpus1 <- tm_map(mycorpus1, function(x) removeWords(x, stopwords("english"))) 
+filtered_five <- data_frame(text = rep(NA, nrow(five)))
+for(i in 1:nrow(five)) {
+  filtered_five$text[i] <- gsub("\\s+", " ", mycorpus1[[i]][[1]])
+}
+write.table(filtered_five, "Five_filtered.txt", sep='\n', row.names = F, col.names = F, quote = F)
+
+
+# Creating term-document matrix 
+tdm1 <- TermDocumentMatrix(mycorpus1) 
+m1 <- as.matrix(tdm1) # here we merge all rows 
+v1 <- sort(rowSums(m1),decreasing=TRUE) # Sum up the frequencies of each word 
+d1 <- data.frame(word = names(v1),freq=v1) # Create one column=names, second=frequences 
+
+
+# Create palette of colors
+pal1 <- brewer.pal(6,"Dark2") 
+pal1 <- pal1[-(1:2)]  
+wordcloud(d1$word,d1$freq, scale=c(8,.3),min.freq=10,max.words=100, random.order=F, rot.per=.15, colors=pal1, vfont=c("sans serif","plain")) 
+
+
+## word cloud for "onetwo" data----------------------
+# Creating corpus (collection of text data)
+mycorpus2 <- Corpus(DataframeSource(onetwo))  
+mycorpus2 <- tm_map(mycorpus2, removePunctuation) 
+mycorpus2 <- tm_map(mycorpus2, function(x) removeWords(x, stopwords("english"))) 
+filtered_one <- data_frame(text = rep(NA, nrow(onetwo)))
+for(i in 1:nrow(onetwo)) {
+  filtered_one$text[i] <- gsub("\\s+", " ", mycorpus2[[i]][[1]])
+}
+write.table(filtered_one, "Onetwo_filtered.txt", sep='\n', row.names = F, col.names = F, quote = F)
+
+# Creating term-document matrix 
+tdm2 <- TermDocumentMatrix(mycorpus2) 
+m2 <- as.matrix(tdm2) # here we merge all rows 
+v2 <- sort(rowSums(m2),decreasing=TRUE) # Sum up the frequencies of each word 
+d2 <- data.frame(word = names(v2),freq=v2) # Create one column=names, second=frequences 
+
+
+# Create palette of colors
+pal2 <- brewer.pal(6,"Dark2") 
+pal2 <- pal2[-(1:2)]  
+wordcloud(d2$word,d2$freq, scale=c(8,.3), min.freq=10,max.words=100, random.order=F, rot.per=.15, colors=pal2, vfont=c("sans serif","plain")) 
+
+
+################## Assignment 2
+
+# Read data
+data <- read.csv("data/olive.csv")
+data$Region[data$Region==1] <- "North"
+data$Region[data$Region==2] <- "South"
+data$Region[data$Region==3] <- "Sardinia"
+data$Region <- as.factor(data$Region)
+d <- SharedData$new(data)
+
+# Scatterplot 1
+p1 <- plot_ly(d, x=~linoleic, y=~eicosenoic, hoverinfo = "text", 
+        text = ~paste("Linoleic: ", linoleic, '</br> </br>', "Eicosenoic: ", eicosenoic),
+        color = I("#808000"), alpha = 0.75) %>%
+  layout(xaxis = list(title = "Level of linoleic"), yaxis = list(title = "Level of eicosenoic"))
+p1
+
+# Scatterplot & barplot
+p2 <- plot_ly(d, x = ~Region, type = "histogram", histnorm = "percent", color = I("#5b3a29")) %>% 
+  layout(barmode="overlay", xaxis = list(title = "Region", titlefont = list(size = 18)), 
+         bargap = 0.15)
+
+bscols(widths=c(2, NA), filter_slider("FL", "Level of Stearic", d, ~stearic), 
+       subplot(p1,p2, titleX = T, titleY = T) %>% 
+         highlight(on = "plotly_select", off = "plotly_deselect",
+                   dynamic = T, opacityDim = I(1), persistent = T,
+                   color = c(toRGB("#450e50"), toRGB("steelblue"), toRGB("deeppink"))) %>% 
+         hide_legend())
+
+# Scatterplot & scatterplot
+p3 <- plot_ly(d, x =~linoleic, y =~arachidic, hoverinfo = "text", 
+              text = ~paste("Linoleic: ", linoleic, '</br> </br>', "Arachidic: ", arachidic),
+              color = I("#808000"), alpha = 0.75) %>%
+  layout(xaxis = list(title = "Level of linoleic"), yaxis = list(title = "Level of arachidic"))
+
+subplot(p1, p3, titleX = T, titleY = T) %>%
+  highlight(on="plotly_select", off = "plotly_deselect", dynamic=T, persistent = T, opacityDim = I(1),
+            color = c(toRGB("#450e50"), toRGB("steelblue"), toRGB("deeppink"), toRGB("orange"))) %>% 
+  hide_legend()
+
+# Interaction of three plots
+p <- ggparcoord(data, columns = 4:11)
+
+temp <- plotly_data(ggplotly(p)) %>% 
+  group_by(X)
+d1 <- SharedData$new(temp, ~.ID, group="task4")
+
+p4_1 <- plot_ly(d1, x=~variable, y=~value)%>%
+  add_lines(line=list(width=0.3), color = I("#808000"))%>%
+  add_markers(marker=list(size=0.3),
+              text=~.ID, hoverinfo="text")
+
+d2<-SharedData$new(data, ~X, group = "task4")
+
+ButtonsX=list()
+for (i in 4:11){
+  ButtonsX[[i-3]]= list(method = "restyle",
+                        args = list( "x", list(data[[i]])),
+                        label = paste("X:", colnames(data)[i]))
+}
+
+ButtonsY=list()
+for (i in 4:11){
+  ButtonsY[[i-3]]= list(method = "restyle",
+                        args = list( "y", list(data[[i]])),
+                        label = paste("Y:", colnames(data)[i]))
+}
+
+ButtonsZ=list()
+for (i in 4:11){
+  ButtonsZ[[i-3]]= list(method = "restyle",
+                        args = list( "z", list(data[[i]])),
+                        label = paste("Z:", colnames(data)[i]))
+}
+
+menus <- list(
+  list(y=0.9, buttons = ButtonsX),
+  list(y=0.75, buttons = ButtonsY),
+  list(y=0.6, buttons = ButtonsZ))
+
+p4_2 <- plot_ly(d2, x = ~palmitic, y = ~palmitoleic, z = ~stearic, hoverinfo = "x+y+z+text", 
+                text = ~Region, alpha = 0.8) %>%
+    add_markers(color = I("#808000")) %>%
+    layout(title = "Select variable:",
+           updatemenus = menus,
+           scene = list(xaxis=list(title="X"), yaxis=list(title="Y"), zaxis=list(title="Z")))
+
+p4_3 <- plot_ly(d2, x = ~Region, type = "histogram", histnorm = "percent", color = I("#5b3a29")) %>% 
+  layout(barmode="overlay", xaxis = list(title = "Region", titlefont = list(size = 18)), 
+         bargap = 0.15)
+
+ps<-htmltools::tagList(p4_1 %>%
+                         highlight(on = "plotly_select", off = "plotly_deselect",
+                                   color = c(toRGB("red"), toRGB("steelblue"), toRGB("darkorange4")),
+                                   dynamic=T, persistent = T, opacityDim = I(1)) %>%
+                         hide_legend(),
+                       p4_2 %>%
+                         highlight(on = "plotly_select", off = "plotly_deselect",
+                                   color = c(toRGB("red"), toRGB("steelblue"), toRGB("darkorange4")),
+                                   dynamic=T, persistent = T, opacityDim = I(1)) %>%
+                         hide_legend(),
+                       p4_3 %>%
+                         highlight(on = "plotly_select", off = "plotly_deselect",
+                                   color = c(toRGB("red"), toRGB("steelblue"), toRGB("darkorange4")),
+                                   dynamic=T, persistent = T, opacityDim = I(1)) %>%
+                         hide_legend()
+)
+htmltools::browsable(ps)
+```
+

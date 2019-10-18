@@ -1,0 +1,53 @@
+---
+title: "Vignette Title"
+author: "Vignette Author"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# To install:
+
+```{r , eval=FALSE}
+devtools::install_github("sburanga/Adv_Progr_5")
+
+```
+
+$~$
+
+# How to Use:
+
+First, you have to create an object.
+
+```{r}
+library(MyShiny)
+# My_sunShiny<-My_shiny$new()
+
+```
+
+After that you can run the Shiny application to see the functionalities of the application!
+
+```{r eval=F}
+
+# My_sunShiny$run()
+
+```
+
+
+
+
+
+
+
+
+

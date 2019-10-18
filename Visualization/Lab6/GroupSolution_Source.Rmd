@@ -1,0 +1,447 @@
+---
+title: "Lab6 Visualization"
+author: "Annalena Erhard, Stefano Toffol"
+date: "3 Oktober 2018"
+output: html_document
+---
+
+```{r Libraries, include=FALSE}
+
+library(tourr) 
+library(plotly) 
+library(visNetwork)
+library(igraph)
+library(seriation)
+library(plotly)
+
+```
+## Assignment 1
+
+#### Task 1.1
+
+```{r task 1.1, include=TRUE, warning=FALSE, out.width=800, out.height=800}
+
+nodes <- read.table("Data/trainMeta.dat", stringsAsFactors = F)
+Encoding(nodes$V1) <- 'latin1'
+nodes$id <- 1:nrow(nodes)
+nodes$V2 <- as.character(nodes$V2)
+nodes$V2[nodes$V2=="1"] <- "Bomber"
+nodes$V2[nodes$V2=="0"] <- "Non-bomber"
+links <- read.table("Data/trainData.dat")
+links <- links[!duplicated(t(apply(links, 1, sort))),]
+colnames(links) <- c("from", "to", "value")
+
+data <- graph_from_data_frame(links[,1:2], directed = F, 
+                              vertices = data.frame(id = nodes$id))
+
+V(data)$label <- nodes$V1
+V(data)$name <- nodes$V1
+V(data)$title <- nodes$V1
+V(data)$font.color <- "white"
+V(data)$group <- nodes$V2
+nodes$value <- NA
+for(i in 1:nrow(nodes)) {
+  nodes$value[i] <- sum(links$value[links$from==nodes$id[i] | links$to==nodes$id[i]])
+}
+V(data)$value <- nodes$value
+E(data)$weight <- links$value
+E(data)$width <- links$value*2 # To emphatize strong links
+
+data_vis <- toVisNetworkData(data)
+
+visNetwork(nodes = data_vis$nodes, edges = data_vis$edges, background = "#333333") %>% 
+  visPhysics(solver="repulsion") %>%
+  visGroups(groupname = "Bomber", color = "#ffff19") %>%  
+  visGroups(groupname = "Non-bomber", color = "#ff96ca") %>%  
+  visLegend() %>%
+  visInteraction(multiselect=T, selectable=T, selectConnectedEdges = T) %>% 
+  visLayout(randomSeed = 11) %>% #913
+  visOptions(highlightNearest = list(enabled = TRUE, algorithm = "hierarchical",
+                                     degree = 1, hideColor = "rgba(33,33,33,0.6)"), 
+             nodesIdSelection = TRUE)
+
+```
+
+$~$
+
+**Analysis:**
+
+The network obtained closely resemble a _giant component graph_ since almost half of the nodes are
+directly connected to two of the bombers, Jamal Zougam and Mohamed Chaoui, that occupy a central
+position in the graph and share almost all the connections. The two main groups that remain separeted
+from the terrorists (right and bottom of the graph) are composed only by non-bombers and can be
+easily reached through two nodes, respectively Taysir Alouny and Semaan Gaby Eid,
+both at a distance path of two from the hubs. Of the people directly linked to Jamal and Mohamed,
+other two clusters can be identified: a community in the top right, exclusively constituted
+by non-bombers, and a second community in the bottom left, made by both bombers and non-bombers.
+The network is also composed by nodes that do not show any connections with the other people linked
+with the terrorist attack.
+
+$~$
+
+#### Task 1.2
+
+```{r task 1.2, include=TRUE, warning=FALSE, out.width = 800, out.height= 800 }
+visNetwork(nodes = data_vis$nodes, edges = data_vis$edges, background = "#333333") %>% 
+  visPhysics(solver="repulsion") %>%
+  visGroups(groupname = "Bomber", color = "#ffff19") %>%  
+  visGroups(groupname = "Non-bomber", color = "#ff96ca") %>%  
+  visLegend() %>%
+  visInteraction(multiselect=T, selectable=T, selectConnectedEdges = F) %>% 
+  visLayout(randomSeed = 11) %>% #913
+  visOptions(highlightNearest = list(enabled = TRUE, algorithm = "hierarchical",
+                                     degree = 2, hideColor = "rgba(33,33,33,0.6)"), 
+             nodesIdSelection = TRUE)
+
+```
+
+$~$
+
+**Analysis:**
+
+As anticipated in the previous analysis, most of the nodes are two steps away from Jamal Zougam,
+one of the organizer of the attack, having provided the cell phones used by the other terrorist
+to detone the bombs, and from Mohamed Chaoui, Zougam's fellow citizen and his "brother from Tangeri",
+as he was defined in one of the many telephone tapping analyzed by the Spanish police forces.
+Moreover also the previously highlighted nodes, even though not as much highly connected to the
+other suspects, also reflect key roles in the organization of the attacks: Tayseer Allouni,
+journalist who interviewed Osama Bin-Laden himself, was accused to be financial courier of the group;
+Semaan Gaby Eid,
+whose real name is Mahmoud Slimane Aoun, was involved into the document forgery of the bombers.
+Other highly connected nodes, not previously mentioned, are
+* Amer Azizi, an al Qaeda's member, previously implicated in the twin towers attack and, even if
+not directly involved into the setting of the explosives, he is believed to have organized
+some meetings to plan the Madrid's attack;
+* Galeb Kalaje, active member and one of the main financier of all the al Qaeda cells in Europe;
+* Imad Eddin Barakat, alias Abu Dahdah, suspected to take part into both Twin Towers and Madrid
+attacks, was also a main financier of the group.
+
+
+
+$~$
+
+#### Task 1.3
+
+```{r task 1.3, include=TRUE, warning=FALSE, out.width=800, out.height=800}
+ceb <- cluster_edge_betweenness(data, weights = NULL, directed = F) 
+# table(ceb$membership)
+# Many groups with only one unit --> Consider only groups of more than 2 nodes
+
+clust <- rep(NA, length(ceb$membership))
+clust[ceb$membership==1] <- "Cluster 1 (22)"
+clust[ceb$membership==6] <- "Cluster 2 (11)"
+clust[ceb$membership==2] <- "Cluster 3 (10)"
+clust[ceb$membership==7] <- "Cluster 4 (6)"
+clust[ceb$membership==5] <- "Cluster 5 (4)"
+clust[is.na(clust)] <- "Single-nodes clusters"
+
+V(data)$group <- clust
+data_vis <- toVisNetworkData(data)
+
+visNetwork(nodes = data_vis$nodes, edges = data_vis$edges, background = "#333333") %>% 
+  visPhysics(solver="repulsion") %>%
+  visGroups(groupname = "Cluster 1 (22)", color = "#29b5f2") %>%  
+  visGroups(groupname = "Cluster 2 (11)", color = "#9b00af") %>%  
+  visGroups(groupname = "Cluster 3 (10)", color = "#cc6f06") %>%  
+  visGroups(groupname = "Cluster 4 (6)", color = "#d8027f") %>%  
+  visGroups(groupname = "Cluster 5 (4)", color = "#06a51b") %>%  
+  visGroups(groupname = "Single-nodes clusters", color = "#c9b399") %>%  
+  visLegend() %>%
+  visInteraction(multiselect=T, selectable=T, selectConnectedEdges = F) %>% 
+  visLayout(randomSeed = 11) %>% #913
+  visOptions(highlightNearest = list(enabled = TRUE, algorithm = "hierarchical",
+                                     degree = 1, hideColor = "rgba(33,33,33,0.6)"), 
+             nodesIdSelection = TRUE)
+
+```
+
+**Analysis:**
+
+The algorithm to detect clusters by optimizing edge betweenness performs fairly well, even though
+it classifies many single nodes as unique clusters. To calculate the degree of betweenness the weights
+were excluded, since otherwise the edges are interpreted ad distances. Considering only the groups with at least three
+people, the resulting division closely resemble the one discovered in step 1, with the addiction of
+another small community (cluster 5 - 4 people, green colour) made by two bombers and two non-bombers.
+
+
+$~$
+
+#### Task 1.4
+
+```{r task 1.4, include=TRUE, warning=FALSE, out.width=800, out.height=800}
+
+netm <- get.adjacency(data, attr="weight", sparse=F)
+colnames(netm) <- V(data)$label
+rownames(netm) <- V(data)$label
+
+rowdist<-dist(netm)
+
+order1<-seriate(rowdist, "HC")
+ord1<-get_order(order1)
+
+reordmatr<-netm[ord1,ord1]
+
+plot_ly(z=~reordmatr, x=~colnames(reordmatr), y=~rownames(reordmatr), type="heatmap")
+
+```
+
+$~$
+
+**Analysis:**
+
+The heatmap bring to the same conclusion of the network graph. In fact the highlighted clusters
+correspond, in order from the top right to the bottom left, to the previously called cluster 1
+(Amer Azizi and other financiers), cluster 5 (composed by 4 people only), cluster 2 (which
+key node is Semaan Gaby Eid), cluster 4 (which key node is Taysir Alouny) and a mixture between
+cluster 3 and cluster 1. The heatmap highlight also couples of points standing on the bottom right/
+top left of the map, nodes that belong mainly to the two biggest cluster and not only share bonds
+with the main two hubs, but also result strongly connected between each other.
+A part from this last observation however, the heatmap brings to the same conclusion of the
+betweenness algorithm, but in a much less understandable format.
+
+$~$
+
+
+
+
+## Assignment 2
+
+
+#### Read dataset
+```{r read data, include=FALSE}
+
+oilcoal = read.table("Data/Oilcoal.csv", header = T, sep = ";", dec = ",")[,c(1:5)]
+oilcoal$Coal = as.numeric(oilcoal$Coal)
+oilcoal$Oil = as.numeric(oilcoal$Oil)
+oilcoal$Marker.size = as.numeric(oilcoal$Marker.size)
+# oilcoal$Year = as.Date(oilcoal$Year)
+
+```
+
+
+$~$
+
+#### Task 2.1
+
+```{r task 2.1, include=TRUE, warning=FALSE}
+
+base = oilcoal %>%
+  plot_ly(x = ~Coal , y = ~Oil , size = ~Marker.size , text = ~Country, hoverinfo = "text")
+
+base %>%
+  add_markers(frame = ~Year, ids = ~Country, color = ~Country) %>%
+  animation_opts(1000, easing = "elastic", redraw = FALSE) %>%
+  animation_button(
+    x = 1, xanchor = "right", y = 0, yanchor = "bottom"
+  ) %>%
+  animation_slider(
+    currentvalue = list(prefix = "Year ", font = list(color="black"))
+  )
+
+```
+
+$~$
+
+** Analysis:**
+
+At the beginning of the time series, all observations are in a range of 0-200 (Coal) and 0-100 (Coal). The only exception is the US. This country showed a slightly higher coal consumption in 1965 than the other observations. Oil consumption in that year was at a level of about 550. From 1965 to 1982 it is noticeable that coal consumption hardly increased at all, but oil consumption increased more. From 1982 onwards, coal consumption also rose sharply in most countries. This is particularly noticeable in China.
+
+
+$~$
+
+#### Task 2.2
+
+```{r task 2.2, include=TRUE, warning=FALSE, out.width="100%", out.height="100%"}
+
+# 1. ----------------------------------------------------------------------------------
+plot_ly(oilcoal, x=~Year, y=~Oil, frame =~Country, text = ~Year, hoverinfo = "text", color = ~Country)%>%
+  add_lines()%>%
+  animation_opts(
+  100, easing = "cubic", redraw = F
+)
+
+# 2. ----------------------------------------------------------------------------------
+plot_ly(oilcoal, x=~Year, y=~Coal, frame =~Country, text = ~Year, hoverinfo = "text", color = ~Country)%>%
+  add_lines()%>%
+  animation_opts(
+  100, easing = "cubic", redraw = F
+)
+# 3. ----------------------------------------------------------------------------------
+oilcoal %>%
+  filter(Country == c("China", "India")) %>%
+  plot_ly(
+    x = ~Coal,
+    y = ~Oil,
+    frame = ~Year,
+    # marker = list(size = ~Marker.size, opacity = 0.5),
+    text = ~Country,
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers',
+    size = ~Marker.size
+  ) %>%
+  layout(showlegend = FALSE) %>%
+  add_markers(color=~Country)
+
+
+
+```
+
+$~$
+
+** Analysis:**
+Looking at the countries at plot 1 and 2 it can be seen that for example India and China have a similarity in their pattern. Also when plotted together it can be seen, that both coal and oil consumption rise until 1998, while China always has a higher level than India. After 1998 both points in the plot make a jump to the right, which means a fast increasement in coal consumption. Both countries are living with a fast increasement of their population. As analyzed in https://worldfellows.yale.edu/sites/default/files/files/DIEChinasandIndiasEmergingEnergyForeignPolicy.pdf , the oil consumption of China doubled between 1993 and 2006. This is a fact that could also be seen in the above plot.
+
+
+#### Task 2.3
+
+```{r task 2.3, include=TRUE, warning=FALSE}
+
+# calculate proportion ---------------
+oilcoal$oilp = (oilcoal$Oil)/(oilcoal$Oil + oilcoal$Coal)*100
+
+
+# create new data frame --------------
+a = oilcoal[,c(1,2,6)]
+b = a
+b$oilp = 0
+
+oilpdata = rbind(a,b)
+rownames(oilpdata) = 1:nrow(oilpdata)
+remove(a,b)
+
+
+
+# animated line plot -----------------
+plot_ly(oilpdata, x=~oilp, y=~Country, frame =~Year, text = ~Year, hoverinfo = "text", color = ~Country)%>%
+  add_lines(line = list(width = 20))%>% # increase width of the line to imake them look like bars
+  animation_opts(200, easing = "linear", redraw = F, frame = 400)
+
+```
+
+$~$
+
+** Analysis:**
+
+The graph shown here shows the amount of variable $Oil_p$ per country. The animation changes the year so that country values can be compared each year. The possibility of comparing all countries on one page is also a clear advantage of the bubble chart. This also has the advantage, that the "real values" of oil and coal consumption of all countries can be compared by year. But including too many dimensions in a plot, like in the bubble chart makes is also hard to get the important information.
+The big advantage of the line chart is the clear depiction of information without causing confusion.
+
+$~$
+
+
+#### Task 2.4
+
+```{r task 2.4, include=TRUE, warning=FALSE}
+
+# animated line plot -----------------
+plot_ly(oilpdata, x=~oilp, y=~Country, frame =~Year, text = ~Year, hoverinfo = "text", color = ~Country)%>%
+  add_lines(line = list(width = 20))%>% # increase width of the line to imake them look like bars
+  animation_opts(800, easing = "elastic", redraw = F, frame = 800)
+
+
+```
+
+$~$
+
+**Analysis:**
+
+The elastic transitioning has the advantage of a smoother change between the different windows, because the lines make a small bump before they change, and a small bump after the line changes. The linear change is just not as smooth. A clear disadvantage of the elastic transitioning is, that it is  disturbing the viewer a little bit by too much motion in the plot.
+
+
+#### Task 2.5
+
+```{r task 2.5, include=TRUE, warning=FALSE, message=FALSE}
+
+d = oilcoal[,1:3]
+d$Country = as.factor(d$Country)
+d$Year = as.factor(d$Year)
+a = tidyr::spread(d, Country, Coal)
+rownames(a) = a[,1]
+d = a[2:9]
+
+
+#Amodified code from plotly's website 
+
+mat <- rescale(d) 
+set.seed(200345) 
+#tour <- new_tour(mat, grand_tour(), NULL) 
+tour<- new_tour(mat, guided_tour(cmass), NULL) 
+
+steps <- c(0, rep(1/15, 200)) 
+
+Projs<-lapply(steps, function(step_size){ 
+  step <- tour(step_size) 
+  if(is.null(step)) { 
+    .GlobalEnv$tour<- new_tour(mat, guided_tour(cmass), NULL) 
+    step <- tour(step_size) 
+    } 
+  step 
+  } 
+  ) 
+
+# projection of each observation 
+
+tour_dat <- function(i) { 
+  step <- Projs[[i]] 
+  proj <- center(mat %*% step$proj) 
+  data.frame(x = proj[,1], y = proj[,2], state = rownames(mat)) 
+  } 
+
+# projection of each variable's axis 
+proj_dat <- function(i) { 
+  step <- Projs[[i]] 
+  data.frame( x = step$proj[,1], y = step$proj[,2], variable = colnames(mat) ) 
+  } 
+stepz <- cumsum(steps) 
+
+
+# tidy version of tour data 
+
+tour_dats <- lapply(1:length(steps), tour_dat) 
+tour_datz <- Map(function(x, y) cbind(x, step = y), tour_dats, stepz) 
+tour_dat <- dplyr::bind_rows(tour_datz) 
+
+# tidy version of tour projection data 
+proj_dats <- lapply(1:length(steps), proj_dat) 
+proj_datz <- Map(function(x, y)cbind(x, step = y), proj_dats, stepz) 
+proj_dat <- dplyr::bind_rows(proj_datz) 
+ax <- list( title = "", showticklabels = FALSE, zeroline = FALSE, showgrid = FALSE, range = c(-1.1, 1.1) ) 
+
+# for nicely formatted slider labels 
+options(digits = 3) 
+tour_dat <- highlight_key(tour_dat, ~state, group = "A") 
+tour <- proj_dat %>% 
+  plot_ly(x = ~x, y = ~y, frame = ~step, color = I("black")) %>% 
+  add_segments(xend = 0, yend = 0, color = I("gray80")) %>% 
+  add_text(text = ~variable) %>% 
+  add_markers(data = tour_dat, text = ~state, ids = ~state, hoverinfo = "text") %>% 
+  layout(xaxis = ax, yaxis = ax)
+
+
+tour
+```
+
+$~$
+
+**Analysis:**
+
+A projection with compact and well seperated clusters can be seen at step 12.2. About 7 clusters can be detected here. The clusters are drawn in the following graphic:
+
+```{r, out.width="100%", out.height= "100%"}
+knitr::include_graphics("clusters.png")
+```
+
+$~$
+
+The year ranges within the clusters are relatively small, but between the clusters there is a bigger difference.
+China is a country, which has a big influence in this projection. The following time series plot shows the volume of coal consumption in this country. In general, China had a very high coal consumption which was almost linearly increasing until 2004. The year after that the consumption dropped to almost 0. 
+
+$~$
+
+```{r task 2.4.2, include=TRUE, warning=FALSE}
+
+# time series plot -----------------
+p <- plot_ly(y = ~a$China, x = ~as.numeric(as.character(a$Year)), mode = 'lines')
+
+
+```

@@ -1,0 +1,102 @@
+
+<!-- saved from url=(0042)https://www.ida.liu.se/~732A75/lab/s1.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><title>TDDD41/732A31: Association Analysis</title>
+
+</head><body><h2>TDDD41/732A75: Association Analysis -1</h2>
+
+<h3>Goals</h3>
+
+<ul>
+<li>Cluster a given dataset and use association analysis to describe
+the clusters obtained.
+</li></ul>
+
+<h3>Procedure</h3>
+
+<ul>
+
+
+<li><b> Dataset</b>
+
+<p>
+In this exercise, you will work with one of the most well-known datasets in the data mining
+literature, namely the Iris dataset. The dataset consists of 50 samples from each of three
+species of Iris flowers (Iris setosa, Iris virginica and Iris versicolor). Four features were measured from each sample, they are the length and the width of sepal and petal. You can find
+the dataset <a href="https://www.ida.liu.se/~732A75/lab/iris.arff">here</a>.
+
+</p><p>
+Open the iris.arff file.
+Since the association analysis in Weka (Apriori algorithm) cannot cope with continuous
+attributes, we should discretize the iris dataset before starting the mining process. Weka
+provides several filters to apply to the data. You can see them by pressing the <font face="Verdana" size="2"><b>Choose</b></font>
+button. We are interested in the Discretize filter that you can find by selecting the directory
+Unsupervised first and then the directory Attribute. Now, click on the line that has appeared
+to the right of the Choose button to edit the properties of the filter. You can find a detailed
+description of the filter by pressing the <font face="Verdana" size="2"><b>More</b></font> button. Select the attributes indices 1-4 (meaning
+that you do not want to discretize the 5th attribute as it is the class and thus already discrete)
+and select 3 bins (number of states of the discretized attributes). Press <font face="Verdana" size="2"><b>OK</b></font>. Press <font face="Verdana" size="2"><b>Apply</b></font>.
+Now you can edit the data again by pressing the <font face="Verdana" size="2"><b>Edit</b></font> button and see that the data has
+actually been discretized.
+
+</p></li><li><b>Clustering</b>
+
+<p>
+Appy SimpleKmeans clusterer to the data with 3 clusters (since we know
+	      there are 3 types of Iris flowers) and seed value 10. In the Cluster mode, select Classes
+to clusters evaluation to crosstabulate the clustering and class labeling.  Ignore the
+class attribute. 
+
+
+</p></li><li><b>Association analysis</b>
+<p>
+To perform association analysis, click on the <font face="Verdana" size="2"><b>Associate</b></font> tab. Press the <font face="Verdana" size="2"><b>Choose</b></font> button to select
+the association algorithm (we recommend to use the Apriori algorithm). Click on the line
+that has appeared to the right of the Choose button to edit the properties of the algorithm.
+You can find a detailed description of the algorithm by pressing the <font face="Verdana" size="2"><b>More</b></font> button. Set the
+desired properties and press <font face="Verdana" size="2"><b>OK</b></font>. Click <font face="Verdana" size="2"><b>Start</b></font>. Check the output on the right hand side of the
+screen. Note that after the conjunctions of attribute-value pairs on the right and left hand
+sides of each rule, there is a number. That number indicates the support of the determinant
+and of the determinant plus the consequent.
+
+</p></li><li><b>Visualization</b>
+<p>
+By clicking on the <font face="Verdana" size="2"><b> Visualize</b></font> tab, you can see the data crosstabulated for each pair of attributes.
+Set your visualization preferences with the bars at the bottom of the screen.
+
+</p></li><li><b>Describing clustering through association analysis</b>
+<p>
+
+Now we use association analysis to assist you in describing the clusters found in the Iris dataset.
+The first thing to do is to create a new attribute that represents the cluster label assigned
+to each instance. For this purpose, click on the Preprocess tab and select the AddCluster
+filter (in the Attribute directory within the Unsupervised directory). Click on the line that
+has appeared to the right of the Choose button to edit the properties of the filter, e.g. which
+clustering algorithm to use, number of clusters (we recommend to use 3 clusters), ignored
+attributes (ignore the class), etc. Check the section on clustering above if in doubt. Press
+Apply. Check that a 6th attribute has been created with the clustering label.
+Now, run the association analysis as indicated in the corresponding section above. Find
+rules that are accurate and such that the antecedent does not contain the class attribute and
+the consequent only contains the cluster attribute. Find such rules for the 3 clusters. This
+should help you to describe the instances grouped in each cluster.
+Repeat the exercise above with a different combination of clustering algorithm, number
+of clusters and/or number of bins in the discretization filter, in order to see whether you get
+better or worse results.
+
+</p></li></ul>
+
+<h3>Submission</h3>
+
+<p>
+Submit a report on your experiments and results as well as answers to all questions in the text. In addition to the experiment described in the text (3 clusters, 3 bins) your report should include discussion about at least two out of 3 possible varitions. 
+</p><ul>
+  <li>Different clustering algorithm (avoid using MakeDensityBasedCluster wrapper in this case)</li>
+  <li>Different number of clusters</li>
+  <li>Different number of bins</li>
+</ul>
+When running experiments with different variations, make sure you reload the data and reapply the AddCluster filter. In each of the 3 (or 4) experiments you should identify at least one (possibly the best) association rule for each of the clusters (<b>Hint</b>: numOfRules parameter). In addition, try to explain the differences between results in different experiments as well as reasons for why these differences occured. 
+
+<p>
+When explaining the experiments there is no need for explaining every step of the process (such as which buttons were clicked, etc). It is enough to say which algorithm was run and which arguements were used. In addition, do not copy-paste the full outputs from the tool. When presenting the results, present only those parts of the output which are relevant for what you are trying to explain. Avoid writing statements without motivation, such as "Results are better/worse." In other words, explain in what respect they are better/worse and why this happened. 
+
+
+</p></body></html>

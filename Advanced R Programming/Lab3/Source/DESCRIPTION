@@ -1,0 +1,13 @@
+Package: Assg3
+Type: Package
+Title: Assignment3
+Version: 1.0
+Date: 2018-09-13
+Author: Group15(mimte666,steto820,andst745)
+Maintainer: group15<andst745@students.liu.se>
+Description: This package contains 2 algorithms. They are Euclidian and Dijkstra.
+Encoding: UTF-8
+LazyData: TRUE
+License: MIT + file LICENSE
+Suggests: testthat
+RoxygenNote: 6.1.0
