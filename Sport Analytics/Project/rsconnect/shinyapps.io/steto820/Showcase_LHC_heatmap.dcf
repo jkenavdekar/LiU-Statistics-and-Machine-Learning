@@ -1,0 +1,12 @@
+name: Showcase_LHC_heatmap
+title: Showcase_LHC_heatmap
+username:
+account: steto820
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1346360
+bundleId: 2509997
+url: https://steto820.shinyapps.io/Showcase_LHC_heatmap/
+when: 1571354347.85874
+asMultiple: FALSE
+asStatic: FALSE
