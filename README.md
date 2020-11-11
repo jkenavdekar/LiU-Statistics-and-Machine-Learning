@@ -1,6 +1,6 @@
 ## MSc Statistics and Machine Learning - *Linköping University*
 
-You can find lab reports and lab content of following courses in this file:  
+In this file you can find the lab reports and lab content of the following courses:  
 * [Machine Learning](#user-content-732a99---machine-learning--2018fall) / 2018Fall
 * [Bioinformatics](#user-content-732a51---bioinformatics--2018fall) / 2018Fall
 * [Visualization](#user-content-732a98---visualization--2018fall) / 2018Fall
@@ -13,17 +13,18 @@ You can find lab reports and lab content of following courses in this file:
 * [Big Data Analytics](#user-content-732a54---big-data-analytics--2019spring) / 2019Spring  
 * [Advanced Machine Learning](#user-content-732a96---advanced-machine-learning--2019fall) / 2019Fall  
 * [Text Mining](#user-content-732a92---text-mining--2019fall) / 2019Fall  
-* [Advanced Data Models and Databases](#user-content-tddd43---advanced-data-models-and-databases--2019fall) / 2019Fall  
+* [Sport Analytics](#user-content-tddd43---advanced-data-models-and-databases--2019fall) / 2019Fall  
 
 
 ### [732A99](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Machine%20Learning) - Machine Learning / 2018Fall  
-The course introduces the main concepts and tools in machine learning which are necessary for professional work and research in data analytics. The course presents machine learning mainly from a probabilistic framework, but successful non-probabilistic methods are also covered. Labs of this course is written in R.  
+The course introduces the main concepts and tools in machine learning which are necessary for professional work and research in data analytics. The course presents machine learning mainly from a probabilistic framework, but successful non-probabilistic methods are also covered. The labs of this course are written in R.  
 This course covers:  
--- Basic concepts in machine learning. Software. Regression, regularization and model selection.  
--- Classification methods. Dimensionality reduction and uncertainty estimation.  
--- Kernel methods and support vector machines. Neural networks and deep learning.  
--- Ensemble methods and mixture models. Online Learning.  
--- Splines and additive models. High-dimensional problems.
+
+* Basic concepts in machine learning. Software. Regression, regularization and model selection.  
+* Classification methods. Dimensionality reduction and uncertainty estimation.  
+* Kernel methods and support vector machines. Neural networks and deep learning.  
+* Ensemble methods and mixture models. Online Learning.  
+* Splines and additive models. High-dimensional problems.
 
 
 * **[Block1 Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Machine%20Learning/Lab1)**: Logistic Regression; Confusion Matrix; K-Nearest Neighbor; K-fold Cross Validation; Linear Regression and Regularization; stepAIC / Akaike; Ridge Regression; LASSO Regression.
@@ -143,7 +144,7 @@ This course covers the following content:
 
 * **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Data%20Mining/Lab1)**: Clustering. K-Means, different k values and "good" cluster discussions.
 
-* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Data%20Mining/Lab2)**: Association Analysis. Clustering a given dataset and using association analysis tı descrive the clusters.
+* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Data%20Mining/Lab2)**: Association Analysis. Clustering a given dataset and using association analysis to descrive the clusters.
 
 * **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Data%20Mining/Lab3)**: Association Analysis. Importance of the distance metric within the clustering algorithm.
 
@@ -184,7 +185,7 @@ The course has 4 modules:
 
 ### [732A54](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Big%20Data%20Analytics) - Big Data Analytics / 2019Spring
 
-This course includes following topics:  
+This course includes the following topics:  
 -- Introduction to Big Data: concept and tools  
 -- Parallel computing  
 -- Databases for Big Data (NoSql, HDFS)  
@@ -192,7 +193,7 @@ This course includes following topics:
 -- Resource management in a cluster environment  
 -- Parallelizing computations for Big Data. MapReduce concept.  
 -- Machine Learning for Big Data  
-The programming language of this course is Python and database technologies are Spark and SparkSQL. The structure of the big data which is used in labs can be found index of the repository. Please click the course code.
+The programming language of this course is Python; database technologies are Spark and SparkSQL. The structure of the big data which is used in labs can be found in the index of the repository. Please click the course code.
 
 * **[Lab0](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Big%20Data%20Analytics/lab0)**: Revision of relational databases (MySQL)  
 * **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Big%20Data%20Analytics/lab1)**: Spark  
@@ -208,6 +209,6 @@ The programming language of this course is Python and database technologies are 
 
 ##### On going course!
 
-### [TDDD43](#) - Advanced Data Models and Databases / 2019Fall
+### [TDDD43](#) - Sports Analytics / 2019Spring
 
 ##### On going course!
