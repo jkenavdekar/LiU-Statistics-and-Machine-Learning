@@ -11,20 +11,19 @@ In this file you can find the lab reports and lab content of the following cours
 * [Introduction to Python](#user-content-732a74---introduction-to-python--2019spring) / 2019Spring  
 * [Bayesian Learning](#user-content-732a91---bayesian-learning--2019spring) / 2019Spring  
 * [Big Data Analytics](#user-content-732a54---big-data-analytics--2019spring) / 2019Spring  
+* [Sport Analytics](#user-content-phdcourse---sports-analytics--2019spring) / 2019Spring
 * [Advanced Machine Learning](#user-content-732a96---advanced-machine-learning--2019fall) / 2019Fall  
 * [Text Mining](#user-content-732a92---text-mining--2019fall) / 2019Fall  
-* [Sport Analytics](#user-content-tddd43---advanced-data-models-and-databases--2019fall) / 2019Fall  
 
 
 ### [732A99](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Machine%20Learning) - Machine Learning / 2018Fall  
 The course introduces the main concepts and tools in machine learning which are necessary for professional work and research in data analytics. The course presents machine learning mainly from a probabilistic framework, but successful non-probabilistic methods are also covered. The labs of this course are written in R.  
 This course covers:  
-
-* Basic concepts in machine learning. Software. Regression, regularization and model selection.  
-* Classification methods. Dimensionality reduction and uncertainty estimation.  
-* Kernel methods and support vector machines. Neural networks and deep learning.  
-* Ensemble methods and mixture models. Online Learning.  
-* Splines and additive models. High-dimensional problems.
+-- Basic concepts in machine learning. Software. Regression, regularization and model selection.  
+-- Classification methods. Dimensionality reduction and uncertainty estimation.  
+-- Kernel methods and support vector machines. Neural networks and deep learning.  
+-- Ensemble methods and mixture models. Online Learning.  
+-- Splines and additive models. High-dimensional problems.
 
 
 * **[Block1 Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Machine%20Learning/Lab1)**: Logistic Regression; Confusion Matrix; K-Nearest Neighbor; K-fold Cross Validation; Linear Regression and Regularization; stepAIC / Akaike; Ridge Regression; LASSO Regression.
@@ -44,15 +43,16 @@ The aim of the course is to learn theoretical models and modern practical tools 
 This course covers:  
 -- *gglot2*, *plotly*, *visNetwork* and *shiny* packages  
 -- *static*, *interactive* and *dynamic* visualization and analysis.  
-To see reports you can click links below and download html files which are named as report.
+To see the reports you can click the links below and download html files, which are named as the report itself.
 
 * **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab1)**: Scatter plot, smoothing, histogram, shiny checkbox application.
 
 * **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab2)**: Perception in visualization, various scatter plots, 2d-density contour versus scatter plots, multidimensional scaling.
 
-* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab3)**: MapBox dot maps; choropleth maps; equidistant projection; conic equal area projection; violin plots; surface plot; choropleth map with a detailed rds map dataset.
+* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab3)**: MapBox dot maps; choropleth maps; equidistant projection; conic equal area projection; violin plots; surface plot; choropleth map with a detailed rds map dataset.  
+*N.B. No data uploaded (too big)*
 
-* **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab4)**: Heatmap; Ordered Heatmaps by using Euclidian distance and minus correlation, optimizing with Hamiltonian Path Length, Hierarchical Clustering and TSP algorithms; Parallel Coordinate Plots; Radar Chart; Comparison of all; Trellis Plot; 3D Scatter Plot; Raster Type 2d-Density Plot; Interval Cut vs Shingles.
+* **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab4)**: Heatmap; Ordered Heatmaps by using Euclidian distance and minus correlation, optimizing with Hamiltonian Path Length, Hierarchical Clustering and TSP algorithms; Parallel Coordinate Plots; Radar Chart; Trellis Plot; 3D Scatter Plot; Raster Type 2d-Density Plot; Interval Cut vs Shingles.
 
 * **[Lab5](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab5)**: Word Cloud; Phrase Networkds; Word Trees; Interactive Scatter Plots; Interactive Bar Charts; Linked Scatter Plot; Interaction Operators.
 
@@ -69,23 +69,23 @@ This course covers subjects such as:
 -- Complete R package Developing  
 -- Code Performance  
 -- HTTP requests and API usage  
--- Build a package with Travis ci
+-- Build a package with Travis CI
 
 
 * **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20R%20Programming/Lab1)**: Data structures in R.
 
 * **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20R%20Programming/Lab2)**: Loops, functions, general syntax of R.
 
-* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20R%20Programming/Lab3)**: R package which contains euclidian and dijkstra functions.
+* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20R%20Programming/Lab3)**: R package which contains euclidian distance and dijkstra's algorithm functions.
 
 * **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20R%20Programming/Lab4)**: R package which contains linear regression by using only basic R functions.
 
-* **[Lab5](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20R%20Programming/Lab5)**: R package which uses a Web API. It uses HTTP requests to obtain a data. This Web API provides a worldwide air pollution and this application creates a local shiny app server and its client to visualize the pollution data for the cities that application supports.
+* **[Lab5](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20R%20Programming/Lab5)**: R package which uses a Web API. It uses HTTP requests to obtain the data. This Web API provides a worldwide air pollution and this application creates a local shiny app server and its client to visualize the pollution data for the cities that application supports.
 
 
 <img src="https://raw.githubusercontent.com/Sburanga/LiU-Statistics-and-Machine-Learning/master/Advanced%20R%20Programming/Lab5/ss.png" width="471" height="338">
 
-* **[Lab6](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20R%20Programming/Lab6)**: R package which contains different programming strategies which are Brute Force; Dynamic Programming; Greedy Heuristic; Parallelized Brute Force for knapsack problem.
+* **[Lab6](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20R%20Programming/Lab6)**: R package which contains different programming strategies which are: Brute Force; Dynamic Prog ramming; Greedy Heuristic; Parallelized Brute Force for knapsack problem.
 
 ### [732A90](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Computational%20Statistics) - Computational Statistics / 2019Spring
 
@@ -102,7 +102,7 @@ The programming language of the course is R and the course offers at least one a
 
 * **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Computational%20Statistics/Lab2)**: optimizing a model parameter by Golden-Section Search algorithm and BFGS, also discussion of comparison of these methods on the plot.
 
-* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Computational%20Statistics/Lab3)**: Cluster Sampling which provides sampling from a proportional set, each element does not have same probability to be drawn. And as another application of generating samples, inverse CDF method and Acceptance/rejection method to generate from different distributions.
+* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Computational%20Statistics/Lab3)**: Cluster Sampling which provides sampling from a proportional set, each element does not have same probability to be drawn. And as another application of generating samples, inverse CDF and Acceptance/Rejection methods are used to generate from different distributions.
 
 * **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Computational%20Statistics/Lab4)**: Implementation of Metropolis-Hasting and Gibbs sampling algorithms to generate samples.
 
@@ -114,22 +114,22 @@ The programming language of the course is R and the course offers at least one a
 
 ### [732A55](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Neural%20Networks%20and%20Learning%20Systems) - Neural Networks and Learning Systems / 2019Spring
 
-The course aims to explain the differences between particular learning paradigms, selecting an appropriate method for solving a given problem and implement the method.  
+The course aims to explain the differences between particular learning paradigms, selecting an appropriate method for solving a given problem and implementing the method.  
 
-The course includes Supervised Learning, Unsupervised Learning and Reinforcement Learning.  
+The course includes Supervised Learning, Unsupervised Learning and Reinforcement Learning. The methods were mostly implemented in Matlab, even though a lab dedicated to CNN was made in python.  
 -- Supervised Learning: neural networks, linear discriminants, support vector machines, ensemble learning, boosting, deep learning.  
 -- Unsupervised Learning: patterns in high-dimensional data, dimensionality reduction, clustering, principal component analysis, linear discriminant analysis.  
 -- Reinforcement Learning: TD-learning, Q-learning
 
-Also the course have written executions of almost all methods which are included, and some of them we have implementation.
+The course has written executions of almost all methods as well, together with their implementation.
 
-* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Neural%20Networks%20and%20Learning%20Systems/lab1)** (MATLAB): Supervised Learning methods and implementation of KNN algorithm and Backpropagation algorithm. Evaluations of these algorithms on different datasets and discussion with supported by plots. Dataset4 is a digit data, so lab includes a digit recognition application with KNN algorithm and Neural Networks.
+* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Neural%20Networks%20and%20Learning%20Systems/Lab1)** (MATLAB): Supervised Learning methods and implementation of KNN algorithm and Backpropagation algorithm. Evaluations of these algorithms on different datasets and discussion with supported by plots. Dataset4 is a hand-written digits data, so lab includes a digit recognition application with KNN algorithm and Neural Networks.
 
-* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Neural%20Networks%20and%20Learning%20Systems/lab2)** (MATLAB): Face recognition model with Haar-features and AdaBoost algorithm and its evaluations.
+* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Neural%20Networks%20and%20Learning%20Systems/Lab2)** (MATLAB): Face recognition model with Haar-features and AdaBoost algorithm and its evaluations.
 
-* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Neural%20Networks%20and%20Learning%20Systems/lab3)** (Python, tensorflow): Application of an image recognition task on the dataset cifar10. This lab also includes some practices about kernels, manual convolution, convolution in tensorflow.
+* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Neural%20Networks%20and%20Learning%20Systems/Lab3)** (Python, tensorflow): Application of an image recognition task on the dataset cifar10. This lab also includes some practices about kernels, manual convolution, convolution in tensorflow.
 
-* **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Neural%20Networks%20and%20Learning%20Systems/lab4)** (MATLAB): Reinforcement Learning with a maze solving problem in different 4 cases of maze generator. Detailed discussion on V-functions and decision of trainin hyperparameters such as discount-factor, learning-rate and exploration-factor.
+* **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Neural%20Networks%20and%20Learning%20Systems/Lab4)** (MATLAB): Reinforcement Learning with a maze solving problem in 4 different cases of maze generator. Detailed discussion on V-functions and decision of trainin hyperparameters such as discount-factor, learning-rate and exploration-factor.
 
 
 ### [732A75](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Data%20Mining) - Advanced Data Mining / 2019Spring
@@ -160,13 +160,15 @@ This course covers the following content:
 -- Debugging.  
 -- Creating Scripts.
 
-* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Introduction%20to%20Python/lab1)**: Python Basics: data structures such as strings, dictionaries, and lists, write loops and comprehensions to iterate over sequential data such as lists of strings.
+* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Introduction%20to%20Python/Lab1)**: Python Basics: data structures such as strings, dictionaries, and lists, write loops and comprehensions to iterate over sequential data such as lists of strings.
 
-* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Introduction%20to%20Python/lab2)**: Python functions, procedural abstraction, some debugging or testing, and functional patterns. The focus is on using the basic language feature of functions, and the subdivision of problems. You will be working with functions, exceptions, assertions and various Pythonic functional constructs. You will also try out basic recursive patterns.
+* **[Lab2a](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Introduction%20to%20Python/Lab2a)**: Python functions, procedural abstraction, some debugging or testing, and functional patterns. The focus is on using the basic language feature of functions (testing exceptions and assertions). 
 
-* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Introduction%20to%20Python/lab3)**: Python class and object concepts.
+* **[Lab2b](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Introduction%20to%20Python/Lab2b)**: More in-depth Python functions. Focus on recursion, Higher Order Functions (map, reduce, filter), declerative patterns, function states and parametrization. Tested with various sorting algorithms.
 
-* **[Lab3b](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Introduction%20to%20Python/lab3b_textgenerator_script)**: Python command-line script which generates text based on another text by using successors and their frequency.
+* **[Lab3a](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Introduction%20to%20Python/Lab3a)**: Python class and object concepts.
+
+* **[Lab3b](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Introduction%20to%20Python/Lab3b)**: Python command-line script which generates text based on another text by using successors and their frequency.
 
 
 ### [732A91](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bayesian%20Learning) - Bayesian Learning / 2019Spring
@@ -178,9 +180,9 @@ The course has 4 modules:
 -- More advanced models, MCMC and Variational Bayes  
 -- Model Inference and Variable Selection
 
-* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bayesian%20Learning/lab1)**: Exploring posterior distributions in one-parameter models by simulation and direct numerical evaluation  
-* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bayesian%20Learning/lab2)**: Polynomial regression and classification with logistic regression  
-* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bayesian%20Learning/lab3)**: MCMC using Gibbs sampling and Metropolis-Hastings  
+* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bayesian%20Learning/Lab1)**: Exploring posterior distributions in one-parameter models by simulation and direct numerical evaluation  
+* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bayesian%20Learning/Lab2)**: Polynomial regression and classification with logistic regression  
+* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bayesian%20Learning/Lab3)**: MCMC using Gibbs sampling and Metropolis-Hastings  
 
 
 ### [732A54](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Big%20Data%20Analytics) - Big Data Analytics / 2019Spring
@@ -193,22 +195,57 @@ This course includes the following topics:
 -- Resource management in a cluster environment  
 -- Parallelizing computations for Big Data. MapReduce concept.  
 -- Machine Learning for Big Data  
-The programming language of this course is Python; database technologies are Spark and SparkSQL. The structure of the big data which is used in labs can be found in the index of the repository. Please click the course code.
+The programming language of this course is Python; database technologies are Spark and SparkSQL. The structure of the big data which is used in labs can be found in the index of the repository. Please click the course code.  
+*N.B. No data uploaded (too big)*
 
-* **[Lab0](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Big%20Data%20Analytics/lab0)**: Revision of relational databases (MySQL)  
-* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Big%20Data%20Analytics/lab1)**: Spark  
-* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Big%20Data%20Analytics/lab2)**: SparkSQL  
-* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Big%20Data%20Analytics/lab3)**: Machine learning application on Spark (Forecast Prediction with Kernel Methods)
+* **[Lab0](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Big%20Data%20Analytics/Lab0)**: Revision of relational databases (MySQL)  
+* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Big%20Data%20Analytics/Lab1)**: Spark  
+* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Big%20Data%20Analytics/Lab2)**: SparkSQL  
+* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Big%20Data%20Analytics/Lab3)**: Machine learning application on Spark (Forecast Prediction with Kernel Methods)
 
+
+### [PhDcourse](#) - Sports Analytics / 2019Spring
+
+This course was part of different PhD programs of Linköping University and was open to my master as well. 
+
+The course consisted of several lectures and seminars, with the focus on the final project, which counted as final exam as well.  
+In the theoretical part several ML and statistical models were applied to various sports and sport datasets. Football, basketball, baseball and hockey applications of spacial statistics and reinforcement learning were presented.
+The final project consisted of an application developed with my classmate Martin Smelikfor the local hockey team, Linköping Hockey Club (LHC). The cooperation was carried on outside the scope of the course as well.
+
+The team was in possession of the data of the shots received and made from more than 10 seasons, with the position of the ball at the moment of the shots (as well as many other variables). We got in touch with the goalkeeper's coach of the team, Mikael Vernblom, and, following his indications, we made an interactive web application with dynamic filters to visualize the shots received. The purpose of the app was to create heatmaps of the hockey rink, showing the hot areas of the games. We added a series of dynamic filters, allowing the user to select several different parameters, such as the goalkeeper(s), the attacker(s), the players on ice, the shot outcome, the manpower situation and much more. We extended the application to visualize the shots made by LHC on the offence as well.  
+A reduced version of the app (with simulated data) is available online at **[this link](https://steto820.shinyapps.io/Showcase_LHC_heatmap/)**.
 
 ### [732A96](#) - Advanced Machine Learning / 2019Fall
 
-##### On going course!
+
 
 ### [732A92](#) - Text Mining / 2019Fall
 
-##### On going course!
+The course investigates several methods and tecniques to extract data from documents and text and to analyze the information obtained. The following subjects were covered:
+-- basic methods for information extraction and retrieval of textual data
+-- text processing techniques to prepare documents for statistical modelling
+-- relevant machine learning models for analyzing textual data and correctly interpretion of the results
+-- machine learning models for text prediction
+-- evaluation of performances of machine learning models for textual data
 
-### [TDDD43](#) - Sports Analytics / 2019Spring
+This course has 5 core contents with an assignment in each topic.
 
-##### On going course!
+* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Text%20Mining/Lab1)**: Information Retrieval
+  * Preprocessing with spacy
+  * Tf-idf vectorizer from scikit-learn
+  * Retrieval with K-NN algorithm
+  * Keyword extraction
+* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Text%20Mining/Lab2)**: Document Classification
+  * Naive Bayes Classifier implementation with Pipeline module from scikit-learn
+  * Balancing the dataset.
+  * Creating Baseline and comparing different classifiers with Grid Search with Cross-Validation (GridSearchCV module)
+* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Text%20Mining/Lab3)**: Document Clustering
+  * Clustering with K-means algorithm
+  * Topic modelling with Latent Dirichlet Allocation
+* **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Text%20Mining/Lab4)**: Natural Language Processing
+  * Word embeddings
+  * Analogies
+  * Simple classifiers and a multi-layer perceptron classifier comparison.
+* **[Lab5](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Text%20Mining/Lab5)**: Information Extraction
+  * Named entity recognition and entity linking
+  * Context-sensitive disambiguation
