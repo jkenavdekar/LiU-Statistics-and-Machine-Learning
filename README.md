@@ -14,6 +14,7 @@ In this file you can find the lab reports and lab content of the following cours
 * [Sport Analytics](#user-content-phdcourse---sports-analytics--2019spring) / 2019Spring
 * [Advanced Machine Learning](#user-content-732a96---advanced-machine-learning--2019fall) / 2019Fall  
 * [Text Mining](#user-content-732a92---text-mining--2019fall) / 2019Fall  
+* [Decision Theory](#user-content-732a92---decision-theory--2019fall) / 2019Fall  
 
 
 ### [732A99](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Machine%20Learning) - Machine Learning / 2018Fall  
@@ -204,22 +205,42 @@ The programming language of this course is Python; database technologies are Spa
 * **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Big%20Data%20Analytics/Lab3)**: Machine learning application on Spark (Forecast Prediction with Kernel Methods)
 
 
-### [PhDcourse](#) - Sports Analytics / 2019Spring
+### [PhDcourse](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Sports%20Analytics/Project) - Sports Analytics / 2019Spring
 
 This course was part of different PhD programs of Linköping University and was open to my master as well. 
-
 The course consisted of several lectures and seminars, with the focus on the final project, which counted as final exam as well.  
-In the theoretical part several ML and statistical models were applied to various sports and sport datasets. Football, basketball, baseball and hockey applications of spacial statistics and reinforcement learning were presented.
-The final project consisted of an application developed with my classmate Martin Smelikfor the local hockey team, Linköping Hockey Club (LHC). The cooperation was carried on outside the scope of the course as well.
 
-The team was in possession of the data of the shots received and made from more than 10 seasons, with the position of the ball at the moment of the shots (as well as many other variables). We got in touch with the goalkeeper's coach of the team, Mikael Vernblom, and, following his indications, we made an interactive web application with dynamic filters to visualize the shots received. The purpose of the app was to create heatmaps of the hockey rink, showing the hot areas of the games. We added a series of dynamic filters, allowing the user to select several different parameters, such as the goalkeeper(s), the attacker(s), the players on ice, the shot outcome, the manpower situation and much more. We extended the application to visualize the shots made by LHC on the offence as well.  
+**Theoretical part**: several ML and statistical models applied to various sports and sport datasets. Football, basketball, baseball and hockey applications of spacial statistics and reinforcement learning were presented.
+
+**Final project**: it consisted of an application developed with my classmate Martin Smelik for the local hockey team, Linköping Hockey Club (LHC). The cooperation was carried on outside the scope of the course as well. The team was in possession of the data of the shots received and made from more than 10 seasons, with the position of the ball at the moment of the shots (as well as many other variables).  
+The app consisted of:
+* **Heatmaps** of the hockey rink
+  * Displaying hot areas of the field
+  * Giving the likelihood of receiving a shot from a specific area
+  * Working for both attack and defense
+* **Dynamic filters** for all the explanatory variables
+  * Possibility of tuning multiple variables simultaneously and independently
+  * Granting the possibility to investigate very specific situations
+  * Allowing total freedom of choice from the user side
+  * Applying the changes of the filters to the plot almost instantly
+* **Continuous contact with the team staff**, in particular with the goalkeeper's coach Mikael Vernblom
 A reduced version of the app (with simulated data) is available online at **[this link](https://steto820.shinyapps.io/Showcase_LHC_heatmap/)**.
 
-### [732A96](#) - Advanced Machine Learning / 2019Fall
+### [732A96](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Machine%20Learning) - Advanced Machine Learning / 2019Fall
 
+The aim of this course is to dig deeper into the statistical background of some key concepts of Machine Learning. In particular, it focuses on the probabilistic thinking of Bayesian Networks (BN), Hidden Markov Models (HMM), Reinforcement Learning and Gaussian Processes (GP). The lectures aim to comprehend each core mechanism of the models treated while the dedicated labs, done in R, force the student to both manually implement the formulas studied and use dedicated packages.  
+The course has 4 modules:  
+-- Graphical Models: Causal Models; BN; Parameter & Structure Learning  
+-- Hidden Markov Models: Markov Networks; Parameter & Structure Learning; Autoregressive HMM; Explicit-Duration HMM  
+-- Reinforcement Learning: Linear Gaussian State Space Models; Bayes, Kalman & Particle Filter; State Space Models  
+-- Gaussian Process Regression and Classification: Covariance Functions; GP Networks; Bayesian Optimization; Laplace Approximation  
 
+* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Machine%20Learning/Lab1)**: Exploring BN, their non-equivalent cases and partial indepenence of the variables on a lung-desease problem.
+* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Machine%20Learning/Lab2)**: Creating an HMM to simulate the movement of a robot and then compute the most probable path according to different probability distributions.
+* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Machine%20Learning/Lab3)**: Implementation of a particle filter for robot localization in different scenarios.
+* **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Machine%20Learning/Lab4)**: Both inplementation and use of built-in functions for GP regression and classification on different datasets.
 
-### [732A92](#) - Text Mining / 2019Fall
+### [732A92](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Text%20Mining) - Text Mining / 2019Fall
 
 The course investigates several methods and tecniques to extract data from documents and text and to analyze the information obtained. The following subjects were covered:
 -- basic methods for information extraction and retrieval of textual data
@@ -249,3 +270,6 @@ This course has 5 core contents with an assignment in each topic.
 * **[Lab5](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Text%20Mining/Lab5)**: Information Extraction
   * Named entity recognition and entity linking
   * Context-sensitive disambiguation
+  
+### [732A66](https://www.ida.liu.se/~732A66/info/courseinfo.en.shtml) - Decision Theory / 2019Fall
+
