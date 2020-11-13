@@ -29,7 +29,7 @@ This course covers:
 
 * **[Block1 Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Machine%20Learning/Lab1)**: Logistic Regression; Confusion Matrix; K-Nearest Neighbor; K-fold Cross Validation; Linear Regression and Regularization; stepAIC / Akaike; Ridge Regression; LASSO Regression.
 
-* **[Block1 Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Machine%20Learning/Lab2)**: Linear Discriminan Analysis (LDA); Decision Tree; Naive Bayes; ROC Curve; Non-Parametric Bootstrap; Parametric Bootstrap; Confidence&Prediction Bands; Principal Components Analysis (PCA); Independent Component Analysis (IDA).
+* **[Block1 Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Machine%20Learning/Lab2)**: Linear Discriminant Analysis (LDA); Decision Tree; Naive Bayes; ROC Curve; Non-Parametric Bootstrap; Parametric Bootstrap; Confidence&Prediction Bands; Principal Components Analysis (PCA); Independent Component Analysis (IDA).
 
 * **[Block1 Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Machine%20Learning/Lab3)**: Kernel Methods (Forecast Example); Support Vector Machines; Neural Networks.
 
@@ -45,8 +45,8 @@ The aim of the course was to first provide the students with the basic of biolog
 -- sequence alignments algorithms  
 -- tree estimation methods  
 -- phylogeny reconstruction  
--- quantative trait modelling  
--- microarray analysis  
+-- quantitative trait modelling  
+-- micro-array analysis  
 -- functional genomics  
 -- rough set-based classification  
 The course provided the five following computer labs, done in R:
@@ -55,7 +55,7 @@ The course provided the five following computer labs, done in R:
 * **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bioinformatics/Lab2)**: DNA sequence acquisition; DNA sequence simulation; sequence analysis; phylogeny reconstruction
 * **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bioinformatics/Lab3)**: trait modelling (geography-based); Brownian motions; Ornstein–Uhlenbeck processes
 * **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bioinformatics/Lab4)**: research review; MA–plots; genetic cluster analysis; gene expressions
-* **[Lab5](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bioinformatics/Lab5)**: use of the Rosetta package; reduction & discretiziation; rule-based network plots 
+* **[Lab5](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bioinformatics/Lab5)**: use of the Rosetta package; reduction & discretization; rule-based network plots 
 
 ### [732A98](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization) - Visualization / 2018Fall  
 The aim of the course is to learn theoretical models and modern practical tools for data visualization and visual data analysis.  
@@ -64,7 +64,7 @@ This course covers:
 -- *static*, *interactive* and *dynamic* visualization and analysis.  
 To see the reports you can click the links below and download html files, which are named as the report itself.
 
-* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab1)**: Scatter plot, smoothing, histogram, shiny checkbox application.
+* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab1)**: Scatter plot, smoothing, histogram, shiny check-box application.
 
 * **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab2)**: Perception in visualization, various scatter plots, 2d-density contour versus scatter plots, multidimensional scaling.
 
@@ -73,7 +73,7 @@ To see the reports you can click the links below and download html files, which 
 
 * **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab4)**: Heatmap; Ordered Heatmaps by using Euclidian distance and minus correlation, optimizing with Hamiltonian Path Length, Hierarchical Clustering and TSP algorithms; Parallel Coordinate Plots; Radar Chart; Trellis Plot; 3D Scatter Plot; Raster Type 2d-Density Plot; Interval Cut vs Shingles.
 
-* **[Lab5](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab5)**: Word Cloud; Phrase Networkds; Word Trees; Interactive Scatter Plots; Interactive Bar Charts; Linked Scatter Plot; Interaction Operators.
+* **[Lab5](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab5)**: Word Cloud; Phrase Networks; Word Trees; Interactive Scatter Plots; Interactive Bar Charts; Linked Scatter Plot; Interaction Operators.
 
 * **[Lab6](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization/Lab6)**: Network Visualization; Graphs; Animations of time series data; Animated Bubble Chart; Animated Bar Charts; 2D-tour Visualization.
 
@@ -95,7 +95,7 @@ This course covers subjects such as:
 
 * **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20R%20Programming/Lab2)**: Loops, functions, general syntax of R.
 
-* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20R%20Programming/Lab3)**: R package which contains euclidian distance and dijkstra's algorithm functions.
+* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20R%20Programming/Lab3)**: R package which contains euclidean distance and Dijkstra's algorithm functions.
 
 * **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20R%20Programming/Lab4)**: R package which contains linear regression by using only basic R functions.
 
@@ -113,11 +113,11 @@ The course includes computational applications of statistics and covers as main 
 -- Optimization  
 -- Random number generation  
 -- Monte Carlo methods, MCMC  
--- Numerical model selection and hyphothesis testing  
+-- Numerical model selection and hypothesis testing  
 -- EM algorithm and stochastic optimization (specifically genetic algorithms).  
 The programming language of the course is R and the course offers at least one application for each topic.
 
-* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Computational%20Statistics/Lab1)**: Some practiceses on different statistics and compter arithmetics in order to test and grasp floating points, arithmetics operations.
+* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Computational%20Statistics/Lab1)**: Some practices on different statistics and computer arithmetics in order to test and grasp floating points, arithmetics operations.
 
 * **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Computational%20Statistics/Lab2)**: optimizing a model parameter by Golden-Section Search algorithm and BFGS, also discussion of comparison of these methods on the plot.
 
@@ -125,7 +125,7 @@ The programming language of the course is R and the course offers at least one a
 
 * **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Computational%20Statistics/Lab4)**: Implementation of Metropolis-Hasting and Gibbs sampling algorithms to generate samples.
 
-* **[Lab5](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Computational%20Statistics/Lab5)**: Hyphothesis testing, Jackknife, Confidence intervals by using bootstrap method.
+* **[Lab5](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Computational%20Statistics/Lab5)**: Hypothesis testing, Jackknife, Confidence intervals by using bootstrap method.
 
 * **[Lab6](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Computational%20Statistics/Lab6)**: Genetic Algorithm and EM algorithm implementations.
 
@@ -148,7 +148,7 @@ The course has written executions of almost all methods as well, together with t
 
 * **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Neural%20Networks%20and%20Learning%20Systems/Lab3)** (Python, tensorflow): Application of an image recognition task on the dataset cifar10. This lab also includes some practices about kernels, manual convolution, convolution in tensorflow.
 
-* **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Neural%20Networks%20and%20Learning%20Systems/Lab4)** (MATLAB): Reinforcement Learning with a maze solving problem in 4 different cases of maze generator. Detailed discussion on V-functions and decision of trainin hyperparameters such as discount-factor, learning-rate and exploration-factor.
+* **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Neural%20Networks%20and%20Learning%20Systems/Lab4)** (MATLAB): Reinforcement Learning with a maze solving problem in 4 different cases of maze generator. Detailed discussion on V-functions and decision of training hyperparameters such as discount-factor, learning-rate and exploration-factor.
 
 
 ### [732A75](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Data%20Mining) - Advanced Data Mining / 2019Spring
@@ -163,7 +163,7 @@ This course covers the following content:
 
 * **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Data%20Mining/Lab1)**: Clustering. K-Means, different k values and "good" cluster discussions.
 
-* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Data%20Mining/Lab2)**: Association Analysis. Clustering a given dataset and using association analysis to descrive the clusters.
+* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Data%20Mining/Lab2)**: Association Analysis. Clustering a given dataset and using association analysis to describe the clusters.
 
 * **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Data%20Mining/Lab3)**: Association Analysis. Importance of the distance metric within the clustering algorithm.
 
@@ -183,7 +183,7 @@ This course covers the following content:
 
 * **[Lab2a](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Introduction%20to%20Python/Lab2a)**: Python functions, procedural abstraction, some debugging or testing, and functional patterns. The focus is on using the basic language feature of functions (testing exceptions and assertions). 
 
-* **[Lab2b](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Introduction%20to%20Python/Lab2b)**: More in-depth Python functions. Focus on recursion, Higher Order Functions (map, reduce, filter), declerative patterns, function states and parametrization. Tested with various sorting algorithms.
+* **[Lab2b](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Introduction%20to%20Python/Lab2b)**: More in-depth Python functions. Focus on recursion, Higher Order Functions (map, reduce, filter), declarative patterns, function states and parametrization. Tested with various sorting algorithms.
 
 * **[Lab3a](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Introduction%20to%20Python/Lab3a)**: Python class and object concepts.
 
@@ -254,17 +254,17 @@ The course has 4 modules:
 -- Reinforcement Learning: Linear Gaussian State Space Models; Bayes, Kalman & Particle Filter 
 -- Gaussian Process Regression and Classification: Covariance Functions; GP Networks; Bayesian Optimization
 
-* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Machine%20Learning/Lab1)**: Exploring BN, their non-equivalent cases and partial indepenence of the variables on a lung-desease problem.
+* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Machine%20Learning/Lab1)**: Exploring BN, their non-equivalent cases and partial independence of the variables on a lung-disease problem.
 * **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Machine%20Learning/Lab2)**: Creating an HMM to simulate the movement of a robot and then compute the most probable path according to different probability distributions.
 * **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Machine%20Learning/Lab3)**: Implementation of a particle filter for robot localization in different scenarios.
-* **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Machine%20Learning/Lab4)**: Both inplementation and use of built-in functions for GP regression and classification on different datasets.
+* **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Machine%20Learning/Lab4)**: Both implementation and use of built-in functions for GP regression and classification on different datasets.
 
 ### [732A92](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Text%20Mining) - Text Mining / 2019Fall
 
-The course investigates several methods and tecniques to extract data from documents and text and to analyze the information obtained. The following subjects were covered:
+The course investigates several methods and techniques to extract data from documents and text and to analyze the information obtained. The following subjects were covered:
 -- basic methods for information extraction and retrieval of textual data
 -- text processing techniques to prepare documents for statistical modelling
--- relevant machine learning models for analyzing textual data and correctly interpretion of the results
+-- relevant machine learning models for analyzing textual data and correctly interpretation of the results
 -- machine learning models for text prediction
 -- evaluation of performances of machine learning models for textual data
 
