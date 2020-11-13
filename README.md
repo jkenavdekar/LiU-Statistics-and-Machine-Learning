@@ -213,7 +213,8 @@ The course consisted of several lectures and seminars, with the focus on the fin
 **Theoretical part**: several ML and statistical models applied to various sports and sport datasets. Football, basketball, baseball and hockey applications of spacial statistics and reinforcement learning were presented.
 
 **Final project**: it consisted of an application developed with my classmate Martin Smelik for the local hockey team, Linköping Hockey Club (LHC). The cooperation was carried on outside the scope of the course as well. The team was in possession of the data of the shots received and made from more than 10 seasons, with the position of the ball at the moment of the shots (as well as many other variables).  
-The app consisted of:
+
+The app consists of:
 * **Heatmaps** of the hockey rink
   * Displaying hot areas of the field
   * Giving the likelihood of receiving a shot from a specific area
@@ -230,10 +231,10 @@ A reduced version of the app (with simulated data) is available online at **[thi
 
 The aim of this course is to dig deeper into the statistical background of some key concepts of Machine Learning. In particular, it focuses on the probabilistic thinking of Bayesian Networks (BN), Hidden Markov Models (HMM), Reinforcement Learning and Gaussian Processes (GP). The lectures aim to comprehend each core mechanism of the models treated while the dedicated labs, done in R, force the student to both manually implement the formulas studied and use dedicated packages.  
 The course has 4 modules:  
--- Graphical Models: Causal Models; BN; Parameter & Structure Learning  
--- Hidden Markov Models: Markov Networks; Parameter & Structure Learning; Autoregressive HMM; Explicit-Duration HMM  
--- Reinforcement Learning: Linear Gaussian State Space Models; Bayes, Kalman & Particle Filter; State Space Models  
--- Gaussian Process Regression and Classification: Covariance Functions; GP Networks; Bayesian Optimization; Laplace Approximation  
+-- Graphical Models: Causal Models; Bayesian Networks
+-- Hidden Markov Models: Markov Networks; Autoregressive HMM; Explicit-Duration HMM  
+-- Reinforcement Learning: Linear Gaussian State Space Models; Bayes, Kalman & Particle Filter 
+-- Gaussian Process Regression and Classification: Covariance Functions; GP Networks; Bayesian Optimization
 
 * **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Machine%20Learning/Lab1)**: Exploring BN, their non-equivalent cases and partial indepenence of the variables on a lung-desease problem.
 * **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Advanced%20Machine%20Learning/Lab2)**: Creating an HMM to simulate the movement of a robot and then compute the most probable path according to different probability distributions.
@@ -271,5 +272,17 @@ This course has 5 core contents with an assignment in each topic.
   * Named entity recognition and entity linking
   * Context-sensitive disambiguation
   
-### [732A66](https://www.ida.liu.se/~732A66/info/courseinfo.en.shtml) - Decision Theory / 2019Fall
+### [732A66](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Decision%20Theory) - Decision Theory / 2019Fall
 
+The course started explaining the basic thinking of decision theory, beginning with empirical decision criteria and gradually building up to probabilistic models and decision making based on Bayesian criteria. The teaching sessions covered the following subjects:
+-- different interpretations of probability  
+-- probabilistic reasoning and likelihood theory  
+-- elements of Baysian inference  
+-- elements of decision theory (actions, consequences, utility and loss)  
+-- the value of information  
+-- decisive inference and sampling from a decision-making perspective  
+-- applications in forensic science  
+
+This course did not have any computer lab, instead required to submit two written assignments covering the majority of the course topics.
+* **[Assignment1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Decision%20Theory/Assignment1)**: posterior probability, Bayesian distributions and fundamental of decision making
+* **[Assignment2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Decision%20Theory/Assignment2)**: payoff tables, expected reward/utility criterion, value of information
