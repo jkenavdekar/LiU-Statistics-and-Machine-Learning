@@ -39,6 +39,24 @@ This course covers:
 
 ### [732A51](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bioinformatics) - Bioinformatics / 2018Fall  
 
+The aim of the course was to first provide the students with the basic of biology needed to understand the statistical models applied in genetics and molecular biology. Afterwards, the course goes into details in:  
+-- sequence analysis  
+-- DNA modelling  
+-- sequence alignments algorithms  
+-- tree estimation methods  
+-- phylogeny reconstruction  
+-- quantative trait modelling  
+-- microarray analysis  
+-- functional genomics  
+-- rough set-based classification  
+The course provided the five following computer labs, done in R:
+
+* **[Lab1](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bioinformatics/Lab1)**: Hardy–Weinberg equilibrium; genomic sequences (raw and FASTA format); use of BLAST
+* **[Lab2](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bioinformatics/Lab2)**: DNA sequence acquisition; DNA sequence simulation; sequence analysis; phylogeny reconstruction
+* **[Lab3](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bioinformatics/Lab3)**: trait modelling (geography-based); Brownian motions; Ornstein–Uhlenbeck processes
+* **[Lab4](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bioinformatics/Lab4)**: research review; MA–plots; genetic cluster analysis; gene expressions
+* **[Lab5](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Bioinformatics/Lab5)**: use of the Rosetta package; reduction & discretiziation; rule-based network plots 
+
 ### [732A98](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Visualization) - Visualization / 2018Fall  
 The aim of the course is to learn theoretical models and modern practical tools for data visualization and visual data analysis.  
 This course covers:  
