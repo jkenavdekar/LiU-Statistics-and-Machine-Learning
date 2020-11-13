@@ -14,7 +14,7 @@ In this file you can find the lab reports and lab content of the following cours
 * [Sport Analytics](#user-content-phdcourse---sports-analytics--2019spring) / 2019Spring
 * [Advanced Machine Learning](#user-content-732a96---advanced-machine-learning--2019fall) / 2019Fall  
 * [Text Mining](#user-content-732a92---text-mining--2019fall) / 2019Fall  
-* [Decision Theory](#user-content-732a92---decision-theory--2019fall) / 2019Fall  
+* [Decision Theory](#user-content-732a66---decision-theory--2019fall) / 2019Fall  
 
 
 ### [732A99](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Machine%20Learning) - Machine Learning / 2018Fall  
@@ -274,7 +274,7 @@ This course has 5 core contents with an assignment in each topic.
   
 ### [732A66](https://github.com/Sburanga/LiU-Statistics-and-Machine-Learning/tree/master/Decision%20Theory) - Decision Theory / 2019Fall
 
-The course started explaining the basic thinking of decision theory, beginning with empirical decision criteria and gradually building up to probabilistic models and decision making based on Bayesian criteria. The teaching sessions covered the following subjects:
+The course started explaining the basic thinking of decision theory, beginning with empirical decision criteria and gradually building up to probabilistic models and decision making based on Bayesian criteria. The teaching sessions covered the following subjects:  
 -- different interpretations of probability  
 -- probabilistic reasoning and likelihood theory  
 -- elements of Baysian inference  
